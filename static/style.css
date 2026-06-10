@@ -1,0 +1,190 @@
+body{
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    background-color: #31010d;
+}
+
+.custom-navbar{
+    margin: 15px;
+    border-radius: 20px;
+    padding: 12px 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    background-color: #130103;
+}
+
+.hero{
+    min-height:100vh;
+    background:linear-gradient(rgba(0, 0, 0, 0.6),
+    rgba(39, 1, 1, 0.502)),
+    url("https://cdn.freepixel.com/thumb/free-illustration-graphics-illustration-of-woman-face-with-stay-safe-message-text-for-female-safety-campaigns-and-empowerment-a-th-1004342546.jpg");
+
+    background-size:contain;
+    background-repeat:no-repeat;
+    background-position:center;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius: 20px;
+    margin: 20px;
+    padding: 40px;
+}
+
+
+.hero-content{
+    text-align:center;
+    color:rgb(230, 108, 108);
+
+}
+
+.hero h1{
+    font-size:4rem;
+    font-weight:bold;
+}
+
+.hero p{
+    font-size:1.5rem;
+    margin-top:20px;
+}
+
+.btn-custom{
+    padding:12px 30px;
+    margin:5px;
+    border-radius:30px;
+    background-color:#54031d;
+    color:bisque
+}
+
+.summary{
+    background:#31010d;
+}
+
+.summary h2{
+    font-weight:700;
+    color:#fecfcf;
+}
+.summary p{
+    font-size:1.1rem;
+    color:#f8c9c9;
+}
+
+.feature-card{
+    background:rgb(136, 88, 88);
+    padding:30px;
+    border-radius:15px;
+    text-align:center;
+    height:100%;
+    box-shadow:0 4px 15px rgba(0,0,0,0.1);
+    transition:0.3s;
+}
+
+.feature-card:hover{
+    transform:translateY(-8px);
+}
+
+.feature-card h4{
+    margin-bottom:15px;
+    color:#700712;
+}
+
+.section-divider{
+    height: 2px;
+    width: 80%;
+    margin: 0 auto;
+    background: linear-gradient(
+        to right,
+        transparent,
+        #dc3545,
+        transparent
+    );
+}
+
+.auth-page{
+    min-height: 100vh;
+    width: 100%;
+
+    background-color: #31010d;
+
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+    padding: 0;
+}
+
+.auth-card{
+    width: 100%;
+    max-width: 450px;
+
+    border: none;
+    border-radius: 20px;
+    margin: 20px;
+
+    padding: 15px;
+
+    backdrop-filter: blur(10px);
+
+    background: rgba(136, 88, 88);
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.auth-title{
+    font-weight: 700;
+    color: #550e15;
+    font-display: block;
+    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
+}
+
+.form-control{
+    border-radius: 10px;
+}
+
+.btn-auth{
+    border-radius: 10px;
+    padding: 12px;
+    font-weight: 600;
+}
+
+.auth-link{
+    text-decoration: none;
+    color: #711226;
+    font-weight: 600;
+}
+
+.auth-link:hover{
+    text-decoration: underline;
+}
+
+.get-started-page{
+    min-height: 100vh;
+    background-color: #31010d;
+    font-family: Arial, sans-serif;
+    color:#fecfcf;
+}
+.bdge span{
+    background: #f8c9c9;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+}
+.gs-section{
+    background: rgba(255,255,255,0.1);
+    padding: 40px;
+    border-radius: 20px;
+    margin-bottom: 30px;
+}
+
+.gs-hero{
+    padding: 30px;
+}
+
+.gs-cta{
+    padding: 20px;
+}
+.icon{
+    font-size: 35px;
+    color: #dc3545;
+    margin-bottom: 10px;
+    display: block;
+}
