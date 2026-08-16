@@ -12,9 +12,28 @@ load_dotenv()
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
+client = Client(
+    TWILIO_ACCOUNT_SID,
+    TWILIO_AUTH_TOKEN
+)
 
 app = Flask(__name__)
-app.secret_key = "safeher_secret_key_2026"
+app.secret_key = os.getenv("SECRET_KEY")
+app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
+app.config["MAIL_PORT"] = int(os.getenv("MAIL_PORT", 587))
+app.config["MAIL_USE_TLS"] = os.getenv(
+    "MAIL_USE_TLS",
+    "True"
+).lower() == "true"
+
+app.config["MAIL_USERNAME"] = os.getenv(
+    "MAIL_USERNAME"
+)
+
+app.config["MAIL_PASSWORD"] = os.getenv(
+    "MAIL_PASSWORD"
+)
+
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -107,39 +126,55 @@ def dashboard():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
+    user_id = session["user_id"]
+
     conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
-    # Get user
+    # ========================================
+    # GET USER
+    # ========================================
+
     cursor.execute("""
-        SELECT fullname, email, phone
+        SELECT id, fullname, email, phone
         FROM users
-        WHERE id=?
-    """, (session["user_id"],))
+        WHERE id = ?
+    """, (user_id,))
 
     user = cursor.fetchone()
 
+    if user is None:
+        conn.close()
+        session.clear()
+        return redirect(url_for("login"))
 
-    # Get location sharing setting
+    # ========================================
+    # GET LOCATION SETTINGS
+    # ========================================
+
     cursor.execute("""
-    SELECT
-        location_sharing,
-        live_location_updates,
-        show_location_to_others
-    FROM user_settings
-    WHERE user_id = ?
-    """, (session["user_id"],))
+        SELECT
+            location_sharing,
+            live_location_updates,
+            show_location_to_others
+        FROM user_settings
+        WHERE user_id = ?
+    """, (user_id,))
 
     location_settings = cursor.fetchone()
+
     conn.close()
 
+    # ========================================
+    # RENDER DASHBOARD
+    # ========================================
 
-    # Default ON if no settings row exists
-    
     return render_template(
-    "dashboard.html",
-    location_settings=location_settings
-)
+        "dashboard.html",
+        user=user,
+        location_settings=location_settings
+    )
     
 @app.route("/profile")
 def profile():
@@ -374,7 +409,6 @@ def settings():
                 0,
                 0,
 
-                0,
                 'English',
                 1
             )
@@ -2495,157 +2529,329 @@ def create_nearby_emergency_alert(sender_id, latitude, longitude):
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
-    # ========================================
-    # GET SENDER + SETTINGS
-    # ========================================
+    try:
 
-    cursor.execute("""
-        SELECT
-            u.fullname,
-            u.phone,
+        # ========================================
+        # GET SENDER INFORMATION
+        # ========================================
 
-            COALESCE(s.share_name_emergency, 0),
-            COALESCE(s.share_phone_emergency, 0),
-            COALESCE(s.nearby_user_alerts, 0)
-
-        FROM users u
-
-        LEFT JOIN user_settings s
-            ON u.id = s.user_id
-
-        WHERE u.id = ?
-    """, (sender_id,))
-
-    sender = cursor.fetchone()
-
-    if not sender:
-        conn.close()
-        return
-
-    sender_name = sender[0]
-    sender_phone = sender[1]
-
-    share_name = sender[2]
-    share_phone = sender[3]
-    nearby_user_alerts = sender[4]
-
-    # ========================================
-    # CHECK IF NEARBY ALERTS ARE ENABLED
-    # ========================================
-
-    if nearby_user_alerts != 1:
-
-        print(
-            "ℹ️ Nearby user alerts disabled."
-        )
-
-        conn.close()
-        return
-
-    # ========================================
-    # PRIVACY SETTINGS
-    # ========================================
-
-    if share_name == 1:
-        alert_name = sender_name
-    else:
-        alert_name = "SafeHer User"
-
-    if share_phone == 1:
-        alert_phone = sender_phone
-    else:
-        alert_phone = "Hidden"
-
-    # ========================================
-    # GET OTHER USERS
-    # ========================================
-
-    cursor.execute("""
-        SELECT id
-        FROM users
-        WHERE id != ?
-    """, (sender_id,))
-
-    users = cursor.fetchall()
-
-    alerts_created = 0
-
-    # ========================================
-    # CHECK EACH USER
-    # ========================================
-
-    for user in users:
-
-        receiver_id = user[0]
-
-        # Get receiver's latest location
         cursor.execute("""
-            SELECT latitude, longitude
-            FROM locations
+            SELECT fullname, phone
+            FROM users
+            WHERE id = ?
+        """, (sender_id,))
+
+        sender = cursor.fetchone()
+
+        if not sender:
+
+            print(
+                f"❌ Sender not found: {sender_id}"
+            )
+
+            return
+
+
+        sender_name = sender[0]
+        sender_phone = sender[1]
+
+
+        # ========================================
+        # GET SENDER PRIVACY SETTINGS
+        # ========================================
+
+        cursor.execute("""
+            SELECT
+                COALESCE(share_name_emergency, 0),
+                COALESCE(share_phone_emergency, 0),
+                COALESCE(show_location_to_others, 0)
+            FROM user_settings
             WHERE user_id = ?
-            ORDER BY created_at DESC
-            LIMIT 1
-        """, (receiver_id,))
+        """, (sender_id,))
 
-        receiver_location = cursor.fetchone()
+        sender_settings = cursor.fetchone()
 
-        if not receiver_location:
-            continue
 
-        receiver_latitude = receiver_location[0]
-        receiver_longitude = receiver_location[1]
+        if sender_settings:
 
-        # Calculate distance
-        distance = calculate_distance(
-            latitude,
-            longitude,
-            receiver_latitude,
-            receiver_longitude
-        )
+            share_name = sender_settings[0]
+            share_phone = sender_settings[1]
+            show_location = sender_settings[2]
 
-        print(
-            f"📍 User {receiver_id} is "
-            f"{distance:.3f} km away"
-        )
+        else:
+
+            share_name = 0
+            share_phone = 0
+            show_location = 0
+
 
         # ========================================
-        # 1 KM RADIUS
+        # PRIVACY
         # ========================================
 
-        if distance <= 1.0:
+        if share_name == 1:
+
+            alert_name = sender_name
+
+        else:
+
+            alert_name = "SafeHer User"
+
+
+        if share_phone == 1:
+
+            alert_phone = sender_phone
+
+        else:
+
+            alert_phone = "Hidden"
+
+
+        # ========================================
+        # GET ALL OTHER USERS
+        # ========================================
+
+        cursor.execute("""
+            SELECT id
+            FROM users
+            WHERE id != ?
+        """, (sender_id,))
+
+        users = cursor.fetchall()
+
+
+        alerts_created = 0
+
+
+        # ========================================
+        # CHECK EVERY USER
+        # ========================================
+
+        for user in users:
+
+            receiver_id = user[0]
+
+
+            # ====================================
+            # RECEIVER SETTINGS
+            # ====================================
 
             cursor.execute("""
-                INSERT INTO nearby_emergency_alerts
-                (
-                    sender_id,
-                    receiver_id,
-                    latitude,
-                    longitude,
-                    message,
-                    sender_name,
-                    sender_phone
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (
+                SELECT
+                    COALESCE(nearby_user_alerts, 1)
+                FROM user_settings
+                WHERE user_id = ?
+            """, (receiver_id,))
 
-                sender_id,
-                receiver_id,
+            receiver_setting = cursor.fetchone()
+
+
+            if receiver_setting:
+
+                nearby_user_alerts = receiver_setting[0]
+
+            else:
+
+                # Default ON
+                nearby_user_alerts = 1
+
+
+            # ====================================
+            # ALERTS DISABLED
+            # ====================================
+
+            if nearby_user_alerts != 1:
+
+                print(
+                    f"ℹ️ User {receiver_id} "
+                    f"disabled Nearby User Alerts."
+                )
+
+                continue
+
+
+            # ====================================
+            # GET RECEIVER LIVE LOCATION
+            # ====================================
+
+            receiver_location = None
+
+            try:
+
+                cursor.execute("""
+                    SELECT
+                        latitude,
+                        longitude
+                    FROM live_location_updates
+                    WHERE user_id = ?
+                    ORDER BY updated_at DESC
+                    LIMIT 1
+                """, (receiver_id,))
+
+                receiver_location = cursor.fetchone()
+
+            except sqlite3.OperationalError:
+
+                # Table/column may not exist.
+                # Fall back to saved locations.
+                receiver_location = None
+
+
+            # ====================================
+            # FALLBACK TO LOCATIONS TABLE
+            # ====================================
+
+            if not receiver_location:
+
+                cursor.execute("""
+                    SELECT
+                        latitude,
+                        longitude
+                    FROM locations
+                    WHERE user_id = ?
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                """, (receiver_id,))
+
+                receiver_location = cursor.fetchone()
+
+
+            # ====================================
+            # NO LOCATION
+            # ====================================
+
+            if not receiver_location:
+
+                print(
+                    f"⚠️ No location found "
+                    f"for user {receiver_id}"
+                )
+
+                continue
+
+
+            receiver_latitude = \
+                receiver_location[0]
+
+            receiver_longitude = \
+                receiver_location[1]
+
+
+            # ====================================
+            # CALCULATE DISTANCE
+            # ====================================
+
+            distance = calculate_distance(
+
                 latitude,
                 longitude,
-                "Emergency reported nearby",
-                alert_name,
-                alert_phone
 
-            ))
+                receiver_latitude,
+                receiver_longitude
 
-            alerts_created += 1
+            )
 
-    conn.commit()
-    conn.close()
 
-    print(
-        f"🚨 Nearby alerts created: {alerts_created}"
-    )
+            print(
+                f"📍 User {receiver_id}: "
+                f"{distance:.3f} km away"
+            )
+
+
+            # ====================================
+            # 1 KM RADIUS
+            # ====================================
+
+            if distance <= 1.0:
+
+
+                # ====================================
+                # LOCATION SHARING
+                # ====================================
+
+                if show_location == 1:
+
+                    alert_latitude = latitude
+                    alert_longitude = longitude
+
+                else:
+
+                    alert_latitude = None
+                    alert_longitude = None
+
+
+                # ====================================
+                # CREATE ALERT
+                # ====================================
+
+                cursor.execute("""
+                    INSERT INTO nearby_emergency_alerts
+                    (
+                        sender_id,
+                        receiver_id,
+                        latitude,
+                        longitude,
+                        message,
+                        sender_name,
+                        sender_phone,
+                        is_read
+                    )
+
+                    VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+                """, (
+
+                    sender_id,
+
+                    receiver_id,
+
+                    alert_latitude,
+
+                    alert_longitude,
+
+                    "Emergency reported nearby",
+
+                    alert_name,
+
+                    alert_phone
+
+                ))
+
+
+                alerts_created += 1
+
+
+                print(
+                    f"🚨 Alert created "
+                    f"for user {receiver_id}"
+                )
+
+
+        # ========================================
+        # COMMIT
+        # ========================================
+
+        conn.commit()
+
+
+        print(
+            f"🚨 Nearby alerts created: "
+            f"{alerts_created}"
+        )
+
+
+    except Exception as e:
+
+        conn.rollback()
+
+        print(
+            "❌ Nearby emergency alert error:",
+            e
+        )
+
+
+    finally:
+
+        conn.close()
     
 def send_emergency_email(user_id, latitude, longitude):
 

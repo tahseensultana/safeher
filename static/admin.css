@@ -2,8 +2,13 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:'Trebuchet MS',sans-serif;
+    font-family:'Trebuchet MS', sans-serif;
 }
+
+
+/* =====================================================
+   BODY
+===================================================== */
 
 body{
     background:#31010d;
@@ -11,48 +16,74 @@ body{
     overflow-x:hidden;
 }
 
-/* ======================
-Sidebar
-====================== */
 
+/* =====================================================
+   SIDEBAR - DESKTOP
+===================================================== */
 
 .sidebar{
     position:fixed;
     top:0;
     left:0;
+
     width:80px;
     height:100vh;
+
     background:#212529;
-    transition:.35s;
+
+    transition:
+        width .35s ease,
+        transform .35s ease;
+
     overflow:hidden;
-    z-index:1000;
+
+    z-index:10000;
 }
+
+
+/* Expanded desktop sidebar */
 
 .sidebar.expand{
     width:260px;
 }
 
+
+/* =====================================================
+   LOGO
+===================================================== */
+
 .logo{
     height:70px;
+
     display:flex;
     align-items:center;
+
     padding:20px;
 }
 
 .logo button{
     background:none;
     border:none;
+
     color:white;
+
     font-size:28px;
+
     cursor:pointer;
+
+    min-width:35px;
 }
 
 .logo-text{
     color:white;
+
     font-size:22px;
     font-weight:bold;
+
     margin-left:20px;
+
     display:none;
+
     white-space:nowrap;
 }
 
@@ -61,20 +92,34 @@ Sidebar
 }
 
 
+/* =====================================================
+   SIDEBAR HR
+===================================================== */
+
 .sidebar hr{
     border:1px solid rgba(255,255,255,.15);
+
     margin:10px 0;
 }
 
-/* Sidebar Links */
+
+/* =====================================================
+   SIDEBAR LINKS
+===================================================== */
 
 .sidebar a{
     color:white;
+
     text-decoration:none;
+
     display:flex;
     align-items:center;
+
     padding:18px 25px;
+
     transition:.3s;
+
+    white-space:nowrap;
 }
 
 .sidebar a:hover{
@@ -83,53 +128,110 @@ Sidebar
 
 .sidebar a i{
     font-size:24px;
+
     min-width:35px;
+
     text-align:center;
 }
 
 .sidebar a span{
     margin-left:18px;
-    white-space:nowrap;
-    font-weight:500;
+
     display:none;
+
+    white-space:nowrap;
+
+    font-weight:500;
 }
 
 .sidebar.expand a span{
     display:inline-block;
 }
 
-/* Push Logout to Bottom */
+
+/* =====================================================
+   LOGOUT
+===================================================== */
 
 .sidebar a:last-child{
     position:absolute;
+
     bottom:20px;
+
     width:100%;
 }
 
-/* ======================
-Main Content
-====================== */
+
+/* =====================================================
+   MAIN CONTENT
+===================================================== */
 
 .main-content{
     margin-left:80px;
+
+    width:calc(100% - 80px);
+
     padding:35px;
-    transition:.35s;
+
+    transition:
+        margin-left .35s ease,
+        width .35s ease;
 }
+
+
+/* Desktop expanded */
 
 .main-content.expand{
     margin-left:260px;
+
+    width:calc(100% - 260px);
 }
 
-/* ======================
-Header
-====================== */
 
-/* ============================
-   Admin Header
-============================ */
+/* =====================================================
+   MOBILE MENU BUTTON
+===================================================== */
+
+.mobile-menu-btn{
+    display:none;
+
+    position:fixed;
+
+    top:15px;
+    left:15px;
+
+    width:45px;
+    height:45px;
+
+    align-items:center;
+    justify-content:center;
+
+    border:none;
+    border-radius:10px;
+
+    background:#dc3545;
+
+    color:white;
+
+    font-size:24px;
+
+    cursor:pointer;
+
+    z-index:10001;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.3);
+}
+
+.mobile-menu-btn:hover{
+    background:#bb2d3b;
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
 
 .topbar{
-
     display:flex;
 
     justify-content:space-between;
@@ -141,12 +243,9 @@ Header
     padding-bottom:20px;
 
     border-bottom:1px solid rgba(255,255,255,.08);
-
 }
 
-
 .header-left h2{
-
     color:#ffffff;
 
     font-size:32px;
@@ -154,32 +253,23 @@ Header
     font-weight:700;
 
     margin:0;
-
 }
 
-
 .header-left p{
-
     color:#d6b4b4;
 
     margin:6px 0 0;
 
     font-size:15px;
-
 }
 
-
 .header-right{
-
     display:flex;
 
     align-items:center;
-
 }
 
-
 .clock{
-
     display:flex;
 
     align-items:center;
@@ -197,33 +287,24 @@ Header
     color:#f8c9c9;
 
     font-size:14px;
-
 }
 
-
 .clock i{
-
     color:#dc3545;
 
     font-size:17px;
-
 }
 
-/* ======================
-Statistic Cards
-====================== */
 
-/* ============================
-   Dashboard Statistics
-============================ */
+/* =====================================================
+   DASHBOARD STATISTICS
+===================================================== */
 
 .dashboard-stats{
     margin-bottom:30px;
 }
 
-
 .dashboard-card{
-
     min-height:145px;
 
     padding:25px;
@@ -247,21 +328,20 @@ Statistic Cards
     position:relative;
 
     overflow:hidden;
-
 }
 
-
 .dashboard-card:hover{
-
     transform:translateY(-5px);
 
     box-shadow:0 15px 30px rgba(0,0,0,.35);
-
 }
 
 
-.stat-content span{
+/* =====================================================
+   STAT CONTENT
+===================================================== */
 
+.stat-content span{
     display:block;
 
     color:#d6b4b4;
@@ -269,12 +349,9 @@ Statistic Cards
     font-size:14px;
 
     margin-bottom:8px;
-
 }
 
-
 .stat-content h2{
-
     color:#ffffff;
 
     font-size:34px;
@@ -282,23 +359,21 @@ Statistic Cards
     font-weight:700;
 
     margin:0 0 5px;
-
 }
 
-
 .stat-content small{
-
     color:#b98d8d;
 
     font-size:12px;
-
 }
 
 
+/* =====================================================
+   STAT ICON
+===================================================== */
+
 .stat-icon{
-
     width:55px;
-
     height:55px;
 
     border-radius:15px;
@@ -306,74 +381,53 @@ Statistic Cards
     display:flex;
 
     align-items:center;
-
     justify-content:center;
 
     font-size:25px;
 
+    flex-shrink:0;
 }
 
-
 .stat-icon i{
-
     margin:0;
-
 }
 
 .users-card .stat-icon{
-
     background:rgba(13,110,253,.15);
 
     color:#4d9aff;
-
 }
 
-
 .contacts-card .stat-icon{
-
     background:rgba(25,135,84,.15);
 
     color:#35c77a;
-
 }
 
-
 .locations-card .stat-icon{
-
     background:rgba(255,193,7,.15);
 
     color:#ffc107;
-
 }
 
-
 .sos-card .stat-icon{
-
     background:rgba(220,53,69,.15);
 
     color:#dc3545;
-
 }
 
-
 .reports-card .stat-icon{
-
     background:rgba(111,66,193,.15);
 
     color:#a982ff;
-
 }
 
-/* ======================
-Charts
-====================== */
 
-/* ============================
-   System Statistics Chart
-============================ */
+/* =====================================================
+   CHART
+===================================================== */
 
 .chart-card{
-
     background:rgba(255,255,255,.08);
 
     border:1px solid rgba(255,255,255,.06);
@@ -383,12 +437,9 @@ Charts
     padding:25px;
 
     box-shadow:0 10px 25px rgba(0,0,0,.25);
-
 }
 
-
 .chart-header{
-
     display:flex;
 
     justify-content:space-between;
@@ -396,12 +447,9 @@ Charts
     align-items:center;
 
     margin-bottom:20px;
-
 }
 
-
 .chart-header h4{
-
     color:#ffffff;
 
     font-size:20px;
@@ -409,55 +457,42 @@ Charts
     font-weight:600;
 
     margin:0;
-
 }
 
-
 .chart-header h4 i{
-
     color:#dc3545;
 
     margin-right:8px;
-
 }
 
-
 .chart-header p{
-
     color:#b98d8d;
 
     font-size:13px;
 
     margin:6px 0 0;
-
 }
 
-
 .chart-wrapper{
-
     position:relative;
 
     width:100%;
 
     height:350px;
-
 }
 
-
 #statsChart{
-
     width:100% !important;
 
     height:100% !important;
-
 }
 
-/* ======================
-Tables
-====================== */
+
+/* =====================================================
+   TABLES
+===================================================== */
 
 .table-card{
-
     background:rgba(255,255,255,.08);
 
     border-radius:20px;
@@ -468,123 +503,105 @@ Tables
 
     box-shadow:0 10px 25px rgba(0,0,0,.25);
 
+    overflow-x:auto;
 }
 
 .table-card h4{
-
     color:white;
 
     margin-bottom:20px;
-
 }
 
 .table{
-
     color:#f8c9c9;
 
     margin-bottom:0;
-
 }
 
 .table thead{
-
     background:#dc3545;
 
     color:white;
-
 }
 
 .table td,
 .table th{
-
     vertical-align:middle;
 
     border-color:rgba(255,255,255,.08);
-
 }
 
 .table tbody tr:hover{
-
     background:rgba(255,255,255,.06);
-
 }
 
-/* ======================
-Buttons
-====================== */
+
+/* =====================================================
+   BUTTONS
+===================================================== */
 
 .btn{
-
     border-radius:10px;
-
 }
 
 .btn-primary{
-
     background:#0d6efd;
 
     border:none;
-
 }
 
 .btn-danger{
-
     background:#dc3545;
 
     border:none;
-
 }
 
 .btn-success{
-
     border:none;
-
 }
 
-/* ======================
-Badges
-====================== */
+
+/* =====================================================
+   BADGES
+===================================================== */
 
 .badge{
-
     font-size:13px;
 
     padding:8px 12px;
-
 }
 
-/* ======================
-Timeline
-====================== */
+
+/* =====================================================
+   TIMELINE
+===================================================== */
 
 .timeline{
-
     list-style:none;
 
     padding-left:0;
-
 }
 
 .timeline li{
-
     padding:15px 0;
 
     border-bottom:1px solid rgba(255,255,255,.08);
 
     color:#f8c9c9;
-
 }
 
 .timeline i{
-
     margin-right:12px;
 
     font-size:18px;
-
 }
 
-.activity-item{
 
+/* =====================================================
+   ACTIVITY
+===================================================== */
+
+.activity-item{
     display:flex;
 
     justify-content:space-between;
@@ -597,58 +614,45 @@ Timeline
 
     transition:.3s;
 
+    gap:15px;
 }
 
-
 .activity-item:hover{
-
     background:rgba(255,255,255,.06);
 
     border-radius:12px;
-
 }
 
-
 .activity-left{
-
     display:flex;
 
     align-items:center;
 
     gap:15px;
 
+    min-width:0;
 }
 
-
 .activity-left strong{
-
     color:#ffffff;
 
     font-size:16px;
-
 }
 
-
 .activity-left p{
-
-    color:#3b0000;
+    color:#d6b4b4;
 
     margin-top:5px;
 
+    margin-bottom:0;
 }
-
 
 .activity-left small{
-
-    color:#170808;
-
+    color:#a98484;
 }
 
-
 .activity-icon{
-
     width:45px;
-
     height:45px;
 
     border-radius:50%;
@@ -656,313 +660,183 @@ Timeline
     display:flex;
 
     align-items:center;
-
     justify-content:center;
 
     flex-shrink:0;
-    font-size:18px;
 
+    font-size:18px;
 }
 
-
 .activity-icon i{
-
     font-size:20px;
 
     margin:0;
-
 }
-.activity-icon.incident{
 
+.activity-icon.incident{
     background:rgba(220,53,69,.15);
 
     color:#dc3545;
-
 }
 
-
 .activity-icon.user{
-
     background:rgba(25,135,84,.15);
 
     color:#198754;
-
 }
 
-
 .activity-icon.location{
-
     background:rgba(13,110,253,.15);
 
     color:#0d6efd;
-
 }
 
-
 .activity-icon.danger{
-
     background:rgba(220,53,69,.18);
 
     color:#dc3545;
-
 }
 
-
 .activity-icon.success{
-
     background:rgba(25,135,84,.18);
 
     color:#198754;
+}
 
+.activity-icon.sos{
+    background:rgba(220,53,69,.20);
+
+    color:#dc3545;
+
+    animation:sosPulse 1.8s infinite;
 }
 
 
-.status-badge{
+/* =====================================================
+   STATUS
+===================================================== */
 
+.status-badge{
     background:#ffc107;
 
     color:#212529;
 
     padding:8px 13px;
+}
 
+.activity-status{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:flex-end;
+
+    gap:10px;
+
+    flex-shrink:0;
+}
+
+.status-form{
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+}
+
+.status-select{
+    width:150px;
+
+    background:#31010d;
+
+    color:#f8c9c9;
+
+    border:1px solid rgba(255,255,255,.2);
+
+    border-radius:8px;
+}
+
+.status-select:focus{
+    background:#31010d;
+
+    color:#fff;
+
+    border-color:#dc3545;
+
+    box-shadow:none;
 }
 
 
-.severity-high{
+/* =====================================================
+   VIEW BUTTON
+===================================================== */
 
+.btn-view{
+    background:#6c757d;
+
+    color:white;
+
+    border:none;
+
+    border-radius:8px;
+}
+
+.btn-view:hover{
+    background:#495057;
+
+    color:white;
+}
+
+
+/* =====================================================
+   SEVERITY
+===================================================== */
+
+.severity-high{
     color:#ff4d5e;
 
     font-weight:bold;
-
 }
 
-
 .severity-medium{
-
     color:#ffc107;
 
     font-weight:bold;
-
 }
 
-
 .severity-low{
-
     color:#28a745;
 
     font-weight:bold;
-
 }
-.empty-activity{
 
+
+/* =====================================================
+   EMPTY ACTIVITY
+===================================================== */
+
+.empty-activity{
     text-align:center;
 
     padding:40px;
 
     color:#a98484;
-
 }
 
-
 .empty-activity i{
-
     font-size:40px;
 
     display:block;
 
     margin-bottom:10px;
-
-}
-/* ======================
-Footer
-====================== */
-
-footer{
-
-    margin-top:40px;
-
-    color:#bbb;
-
-}
-
-.card-header{
-
-    background:#dc3545;
-
-    color:white;
-
-    border-radius:15px 15px 0 0;
-
-}
-
-/* ======================
-Responsive
-====================== */
-
-@media(max-width:992px){
-
-    .sidebar{
-
-        width:80px;
-
-    }
-
-    .sidebar .logo small{
-
-        display:none;
-
-    }
-
-    .sidebar .logo h2{
-
-        font-size:20px;
-
-    }
-
-    .sidebar a{
-
-        justify-content:center;
-
-    }
-
-    .sidebar:not(.expand) a{
-    justify-content:center;
-}
-
-.sidebar:not(.expand) a span{
-    display:none;
-}
-
-.sidebar.expand a{
-    justify-content:flex-start;
-}
-
-.sidebar.expand a span{
-    display:inline;
-}
-
-    .sidebar i{
-
-        font-size:24px;
-
-        margin:0;
-
-    }
-
-    .main-content{
-    margin-left:80px;
-    width:calc(100% - 80px);
-}
-
-    .chart-row{
-
-        grid-template-columns:1fr;
-
-    }
-
-}
-
-@media(max-width:768px){
-
-    .topbar{
-
-        flex-direction:column;
-
-        align-items:flex-start;
-
-        gap:15px;
-
-    }
-
-    .header-left h2{
-
-        font-size:26px;
-
-    }
-
-    .clock{
-
-        font-size:13px;
-
-    }
-
-}
-
-@media(max-width:576px){
-
-    .main{
-
-        padding:20px;
-
-    }
-
-}
-
-@media(max-width:1200px){
-
-    .dashboard-card{
-
-        min-height:135px;
-
-    }
-
 }
 
 
-@media(max-width:576px){
-
-    .dashboard-card{
-
-        padding:20px;
-
-    }
-
-    .stat-content h2{
-
-        font-size:28px;
-
-    }
-
-    .stat-icon{
-
-        width:48px;
-
-        height:48px;
-
-        font-size:21px;
-
-    }
-
-}
-
-@media(max-width:576px){
-
-    .chart-card{
-
-        padding:18px;
-
-    }
-
-    .chart-header h4{
-
-        font-size:17px;
-
-    }
-
-    .chart-wrapper{
-
-        height:280px;
-
-    }
-
-}
-
-/* ============================
-   Incident Details
-============================ */
+/* =====================================================
+   INCIDENT DETAILS
+===================================================== */
 
 .incident-detail{
-
     background:rgba(255,255,255,.05);
 
     border-radius:14px;
@@ -970,82 +844,59 @@ Responsive
     padding:20px;
 
     margin-top:20px;
-
 }
 
-
 .incident-detail h5{
-
     color:#ffffff;
 
     margin-bottom:18px;
-
 }
 
-
 .incident-detail h5 i{
-
     color:#dc3545;
 
     margin-right:8px;
-
 }
 
-
 .detail-row{
-
     display:flex;
 
     justify-content:space-between;
 
+    gap:20px;
+
     padding:12px 0;
 
     border-bottom:1px solid rgba(255,255,255,.06);
-
 }
-
 
 .detail-row span{
-
     color:#b98d8d;
-
 }
-
 
 .detail-row strong{
-
     color:#ffffff;
 
+    text-align:right;
 }
-
 
 .description-box{
-
     margin-top:20px;
-
 }
-
 
 .description-box strong{
-
     color:#ffffff;
-
 }
 
-
 .description-box p{
-
     color:#d6b4b4;
 
     margin-top:8px;
 
     line-height:1.7;
-
 }
 
-
 .incident-image{
-
     max-width:100%;
 
     max-height:400px;
@@ -1053,18 +904,12 @@ Responsive
     border-radius:12px;
 
     margin-top:10px;
-
-}
-.activity-icon.sos{
-
-    background:rgba(220,53,69,.20);
-
-    color:#dc3545;
-
-    animation:sosPulse 1.8s infinite;
-
 }
 
+
+/* =====================================================
+   SOS ANIMATION
+===================================================== */
 
 @keyframes sosPulse{
 
@@ -1082,68 +927,498 @@ Responsive
 
 }
 
-.status-form{
 
-    display:flex;
+/* =====================================================
+   FOOTER
+===================================================== */
 
-    align-items:center;
+footer{
+    margin-top:40px;
 
-    gap:10px;
-
+    color:#bbb;
 }
 
-.status-select{
+.card-header{
+    background:#dc3545;
 
-    width:150px;
+    color:white;
 
-    background:#31010d;
+    border-radius:15px 15px 0 0;
+}
+
+
+/* =====================================================
+   OTHER COMPONENTS
+===================================================== */
+
+#map{
+    height:500px;
+
+    border-radius:15px;
+}
+
+.card{
+    border:none;
+}
+
+.card-body{
+    padding:30px;
+}
+
+.card-body label{
+    color:#f8c9c9;
+}
+
+.contact-card:hover{
+    transform:translateY(-3px);
+
+    transition:.2s;
+}
+
+
+/* =====================================================
+   RECORDING CARD
+===================================================== */
+
+.record-card{
+    max-width:600px;
+
+    margin:70px auto;
+
+    padding:35px;
+
+    border-radius:20px;
+
+    background:rgba(255,255,255,.1);
 
     color:#f8c9c9;
-
-    border:1px solid rgba(255,255,255,.2);
-
-    border-radius:8px;
-
 }
 
-.status-select:focus{
+.record-icon{
+    width:100px;
+    height:100px;
 
-    background:#31010d;
+    border-radius:50%;
 
-    color:#fff;
+    background:#dc3545;
 
-    border-color:#dc3545;
-
-    box-shadow:none;
-
-}
-
-.activity-status{
+    color:white;
 
     display:flex;
 
     align-items:center;
+    justify-content:center;
 
-    gap:10px;
+    margin:auto;
 
+    font-size:42px;
 }
 
-.btn-view{
+#timer{
+    font-size:42px;
 
-    background:#6c757d;
+    font-weight:bold;
 
-    color:white;
+    margin-top:25px;
 
+    margin-bottom:20px;
+}
+
+#recordingStatus{
+    margin-top:15px;
+}
+
+#stopButton{
+    display:none;
+}
+
+.sos-btn.holding{
+    transform:scale(.95);
+
+    opacity:.8;
+}
+
+
+/* =====================================================
+   PHONE INPUT
+===================================================== */
+
+.iti{
+    width:100%;
+}
+
+.iti__country-list{
+    z-index:99999;
+}
+
+.iti input{
+    height:48px;
+}
+
+
+/* =====================================================
+   HISTORY
+===================================================== */
+
+.history-card{
     border:none;
 
-    border-radius:8px;
+    border-radius:18px;
+
+    color:#f8c9c9;
+}
+
+.search-box{
+    max-width:300px;
+}
+
+.page-title{
+    font-weight:700;
+
+    color:#dc3545;
+}
+
+
+/* =====================================================
+   DESKTOP / TABLET
+===================================================== */
+
+@media(max-width:992px){
+
+    .sidebar{
+        width:80px;
+    }
+
+    .sidebar.expand{
+        width:240px;
+    }
+
+    .sidebar:not(.expand) .logo-text{
+        display:none;
+    }
+
+    .sidebar:not(.expand) a{
+        justify-content:center;
+
+        padding-left:20px;
+        padding-right:20px;
+    }
+
+    .sidebar:not(.expand) a span{
+        display:none;
+    }
+
+    .sidebar.expand a{
+        justify-content:flex-start;
+    }
+
+    .sidebar.expand a span{
+        display:inline-block;
+    }
+
+    .main-content{
+        margin-left:80px;
+
+        width:calc(100% - 80px);
+    }
+
+    .main-content.expand{
+        margin-left:240px;
+
+        width:calc(100% - 240px);
+    }
+
+    .chart-row{
+        grid-template-columns:1fr;
+    }
 
 }
 
-.btn-view:hover{
 
-    background:#495057;
+/* =====================================================
+   MOBILE
+===================================================== */
 
-    color:white;
+@media(max-width:768px){
+
+    /* -----------------------------------------
+       MOBILE MENU BUTTON
+    ----------------------------------------- */
+
+    .mobile-menu-btn{
+        display:flex;
+    }
+
+
+    /* -----------------------------------------
+       SIDEBAR
+    ----------------------------------------- */
+
+    .sidebar{
+        top:0;
+        left:0;
+
+        width:250px !important;
+
+        height:100vh;
+
+        transform:translateX(-100%);
+
+        transition:transform .35s ease;
+
+        overflow-y:auto;
+
+        overflow-x:hidden;
+
+        z-index:10000;
+    }
+
+
+    /*
+       IMPORTANT:
+       On mobile .expand means OPEN.
+    */
+
+    .sidebar.expand{
+        width:250px !important;
+
+        transform:translateX(0);
+    }
+
+
+    /* -----------------------------------------
+       MOBILE LOGO
+    ----------------------------------------- */
+
+    .sidebar .logo{
+        width:250px;
+
+        height:70px;
+
+        padding:20px;
+    }
+
+    .sidebar .logo-text{
+        display:block;
+    }
+
+
+    /* -----------------------------------------
+       MOBILE LINKS
+    ----------------------------------------- */
+
+    .sidebar a{
+        width:250px;
+
+        display:flex;
+
+        justify-content:flex-start;
+
+        align-items:center;
+
+        padding:18px 25px;
+    }
+
+    .sidebar a span{
+        display:inline-block;
+
+        margin-left:18px;
+    }
+
+    .sidebar a i{
+        min-width:35px;
+    }
+
+
+    /* -----------------------------------------
+       LOGOUT
+    ----------------------------------------- */
+
+    .sidebar a:last-child{
+        position:absolute;
+
+        bottom:20px;
+
+        width:250px;
+    }
+
+
+    /* -----------------------------------------
+       MAIN CONTENT
+    ----------------------------------------- */
+
+    .main-content,
+    .main-content.expand{
+
+        margin-left:0 !important;
+
+        width:100% !important;
+
+        padding:75px 20px 20px 20px;
+    }
+
+
+    /* -----------------------------------------
+       HEADER
+    ----------------------------------------- */
+
+    .topbar{
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:15px;
+
+        margin-bottom:25px;
+    }
+
+    .header-left h2{
+        font-size:26px;
+    }
+
+    .header-left p{
+        font-size:14px;
+    }
+
+    .clock{
+        font-size:13px;
+    }
+
+
+    /* -----------------------------------------
+       ACTIVITY
+    ----------------------------------------- */
+
+    .activity-item{
+        align-items:flex-start;
+
+        flex-direction:column;
+
+        gap:12px;
+    }
+
+    .activity-status{
+        width:100%;
+
+        justify-content:flex-start;
+
+        margin-left:60px;
+    }
+
+
+    /* -----------------------------------------
+       TABLE
+    ----------------------------------------- */
+
+    .table-card{
+        padding:18px;
+
+        overflow-x:auto;
+    }
+
+
+    /* -----------------------------------------
+       CHART
+    ----------------------------------------- */
+
+    .chart-card{
+        padding:18px;
+    }
+
+    .chart-header{
+        align-items:flex-start;
+
+        gap:10px;
+    }
+
+    .chart-header h4{
+        font-size:17px;
+    }
+
+    .chart-wrapper{
+        height:280px;
+    }
+
+}
+
+
+/* =====================================================
+   SMALL MOBILE
+===================================================== */
+
+@media(max-width:576px){
+
+    .sidebar{
+        width:230px !important;
+    }
+
+    .sidebar.expand{
+        width:230px !important;
+    }
+
+    .sidebar .logo{
+        width:230px;
+    }
+
+    .sidebar a{
+        width:230px;
+    }
+
+    .sidebar a:last-child{
+        width:230px;
+    }
+
+
+    .mobile-menu-btn{
+        width:44px;
+
+        height:44px;
+
+        top:12px;
+
+        left:12px;
+    }
+
+
+    .main-content,
+    .main-content.expand{
+        padding:70px 15px 20px 15px;
+    }
+
+
+    .dashboard-card{
+        padding:20px;
+
+        min-height:125px;
+    }
+
+    .stat-content h2{
+        font-size:28px;
+    }
+
+    .stat-icon{
+        width:48px;
+        height:48px;
+
+        font-size:21px;
+    }
+
+
+    .detail-row{
+        flex-direction:column;
+
+        gap:5px;
+    }
+
+    .detail-row strong{
+        text-align:left;
+    }
+
+
+    .record-card{
+        margin:40px auto;
+
+        padding:25px 20px;
+    }
 
 }

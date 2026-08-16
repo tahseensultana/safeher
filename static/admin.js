@@ -7,22 +7,107 @@
 // Sidebar Toggle
 // =============================
 
-const sidebar = document.getElementById("sidebar");
-const mainContent = document.getElementById("mainContent");
-const toggleBtn = document.getElementById("toggleBtn");
+// =======================================
+// SIDEBAR
+// =======================================
 
-if (toggleBtn) {
+document.addEventListener("DOMContentLoaded", function () {
 
-    toggleBtn.addEventListener("click", function () {
+    const sidebar = document.getElementById("sidebar");
+    const mainContent = document.getElementById("mainContent");
 
-        sidebar.classList.toggle("expand");
-        mainContent.classList.toggle("expand");
+    const toggleBtn = document.getElementById("toggleBtn");
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+
+
+    /* =========================================
+       CHECK SIDEBAR
+    ========================================= */
+
+    if (!sidebar) {
+        console.log("Sidebar not found");
+        return;
+    }
+
+
+    /* =========================================
+       DESKTOP SIDEBAR
+    ========================================= */
+
+    if (toggleBtn) {
+
+        toggleBtn.addEventListener("click", function () {
+
+            sidebar.classList.toggle("expand");
+
+            if (mainContent && window.innerWidth > 768) {
+
+                mainContent.classList.toggle("expand");
+
+            }
+
+        });
+
+    }
+
+
+    /* =========================================
+       MOBILE SIDEBAR
+    ========================================= */
+
+    if (mobileMenuBtn) {
+
+        mobileMenuBtn.addEventListener("click", function () {
+
+            sidebar.classList.toggle("expand");
+
+        });
+
+    }
+
+
+    /* =========================================
+       CLOSE MOBILE SIDEBAR
+       AFTER CLICKING MENU ITEM
+    ========================================= */
+
+    const sidebarLinks = document.querySelectorAll(".sidebar a");
+
+    sidebarLinks.forEach(function (link) {
+
+        link.addEventListener("click", function () {
+
+            if (window.innerWidth <= 768) {
+
+                sidebar.classList.remove("expand");
+
+            }
+
+        });
 
     });
 
-}
 
+    /* =========================================
+       HANDLE WINDOW RESIZE
+    ========================================= */
 
+    window.addEventListener("resize", function () {
+
+        /*
+         * When moving from mobile to desktop,
+         * remove mobile-only sidebar state.
+         */
+
+        if (window.innerWidth > 768) {
+
+            sidebar.classList.remove("expand");
+
+        }
+
+    });
+
+});
 // =============================
 // Delete Confirmation
 // =============================

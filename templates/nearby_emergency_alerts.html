@@ -213,16 +213,27 @@ async function loadAlerts() {
 
                     <div class="mt-3">
 
-                        <a
-                            href="https://www.openstreetmap.org/?mlat=${alert.latitude}&mlon=${alert.longitude}"
-                            target="_blank"
-                            class="btn btn-dark btn-sm">
-
-                            <i class="bi bi-geo-alt-fill"></i>
-
-                            View Location
-
-                        </a>
+                       ${
+    alert.latitude !== null &&
+    alert.longitude !== null
+        ? `
+            <a
+                href="https://www.openstreetmap.org/?mlat=${alert.latitude}&mlon=${alert.longitude}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-dark btn-sm"
+            >
+                <i class="bi bi-geo-alt-fill"></i>
+                View Location
+            </a>
+        `
+        : `
+            <span class="text-muted">
+                <i class="bi bi-geo-alt-slash"></i>
+                Location not shared
+            </span>
+        `
+}
 
                     </div>
 

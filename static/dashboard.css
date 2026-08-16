@@ -1,487 +1,923 @@
+/* =========================================================
+   SAFEHER USER DASHBOARD - CLEAN FIXED CSS
+========================================================= */
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    font-family:
+        'Trebuchet MS',
+        'Lucida Sans Unicode',
+        'Lucida Grande',
+        'Lucida Sans',
+        Arial,
+        sans-serif;
 }
 
-body{
-    background:#31010d;
-    overflow-x:hidden;
+html {
+    scroll-behavior: smooth;
 }
 
-.sidebar{
-    position:fixed;
-    top:0;
-    left:0;
-    width:80px;
-    height:100vh;
-    background:#212529;
-    transition:.35s;
-    overflow:hidden;
-    z-index:1000;
-}
-
-.sidebar.expand{
-    width:260px;
-}
-
-.logo{
-    height:70px;
-    display:flex;
-    align-items:center;
-    padding:20px;
-}
-
-.logo button{
-    background:none;
-    border:none;
-    color:white;
-    font-size:28px;
-    cursor:pointer;
-}
-
-.logo-text{
-    color:white;
-    font-size:22px;
-    font-weight:bold;
-    margin-left:20px;
-    display:none;
-    white-space:nowrap;
-}
-
-.sidebar.expand .logo-text{
-    display:block;
-}
-
-.sidebar hr{
-    border:1px solid rgba(255,255,255,.15);
-    margin:10px 0;
-}
-
-/* Sidebar Links */
-
-.sidebar a{
-    color:white;
-    text-decoration:none;
-    display:flex;
-    align-items:center;
-    padding:18px 25px;
-    transition:.3s;
-}
-
-.sidebar a:hover{
-    background:#dc3545;
-}
-
-.sidebar a i{
-    font-size:24px;
-    min-width:35px;
-    text-align:center;
-}
-
-.sidebar a span{
-    margin-left:18px;
-    display:none;
-    white-space:nowrap;
-    font-weight:500;
-}
-
-.sidebar.expand a span{
-    display:inline;
-}
-
-/* Push Logout to Bottom */
-
-.sidebar a:last-child{
-    position:absolute;
-    bottom:20px;
-    width:100%;
-}
-
-/* ==========================
-   Main Content
-========================== */
-
-.main-content{
-    margin-left:80px;
-    padding:35px;
-    transition:.35s;
-}
-
-.main-content.expand{
-    margin-left:260px;
-}
-
-
-h2{
-    font-weight:700;
-    color:#f8c9c9;
-}
-
-.sos-btn{
-
-    width:180px;
-    height:180px;
-
-    border-radius:50%;
-
-    border:none;
-
-    background:rgb(156, 19, 19);
-
-    color:white;
-
-    font-size:48px;
-
-    font-weight:bolder;
-
-    box-shadow:0 0 25px rgba(220,53,69,.5);
-
-    cursor:pointer;
-
-    transition:.3s;
-
-    animation:pulse 1.8s infinite;
-}
-
-.sos-btn:hover{
-
-    transform:scale(1.08);
-
-}
-
-@keyframes pulse{
-
-    0%{
-        box-shadow:0 0 0 0 rgba(220,53,69,.7);
-    }
-
-    70%{
-        box-shadow:0 0 0 35px rgba(220,53,69,0);
-    }
-
-    100%{
-        box-shadow:0 0 0 0 rgba(220,53,69,0);
-    }
-
-}
-
-/* ==========================
-   Feature Cards
-========================== */
-
-.feature-card{
-
-    background:rgb(136,88,88);
-
-    border-radius:15px;
-
-    padding:30px;
-
-    text-align:center;
-
-    box-shadow:0 8px 20px rgba(0,0,0,.08);
-
-    transition:.3s;
-
-    height:100%;
-
-}
-
-.feature-card:hover{
-
-    transform:translateY(-8px);
-
-    box-shadow:0 15px 35px rgba(0,0,0,.15);
-
-}
-
-.feature-card i{
-
-    font-size:55px;
-
-    color:#dc3545;
-
-    margin-bottom:20px;
-
-}
-
-.feature-card h5{
-
-    margin-bottom:20px;
-
-    font-weight:600;
-
-}
-
-.feature-card .btn{
-
-    border-radius:25px;
-
-    padding:8px 25px;
-
-}
-
-.feature-card h5 a{
-    color:#700712;
-    text-decoration:none;
-}
-
-.feature-card h5 a:hover{
-    color:#dc3545;
-}
-
-
-.card{
-
-    border:none;
-
-    border-radius:15px;
-    background:rgb(255,255,255,0.1);
-
-}
-
-.card-body{
-
-    padding:30px;
-    
-
-}
-
-.card-body h4{
-
-    color:#dc3545;
-
-    font-weight:bold;
-
-}
-
-.card-body p{
-
-    margin-top:10px;
-
-    font-size:17px;
-
-    color:#f8c9c9;
-
-
-}
-
-#viewMode {
-
-    color:#f8c9c9;
-
-}
-
-#editMode {
-
-    color:#f8c9c9;
-
-}
-
-.iti{
-    width:100%;
-}
-
-.iti__country-list{
-    z-index:9999;
-}
-
-.iti input{
-    height:48px;
-}
-
-.history-card{
-    border:none;
-    border-radius:18px;
-    color:#f8c9c9;
-}
-
-.table thead{
-    background:#dc3545;
-    color:white;
-}
-
-.table td{
-    vertical-align:middle;
-}
-
-.badge{
-    padding:8px 14px;
-    font-size:14px;
-}
-
-.page-title{
-    font-weight:700;
-    color:#dc3545;
-}
-
-.search-box{
-    max-width:300px;
-}
-
-@media(max-width:992px){
-
-    .sidebar{
-
-        width:70px;
-
-    }
-
-    .sidebar.expand{
-
-        width:220px;
-
-    }
-
-    .main-content{
-
-        margin-left:70px;
-
-    }
-
-    .main-content.expand{
-
-        margin-left:220px;
-
-    }
-
-}
-
-@media(max-width:768px){
-
-    .main-content{
-
-        padding:20px;
-
-    }
-
-    .sos-btn{
-
-        width:140px;
-        height:140px;
-        font-size:34px;
-
-    }
-
-    .feature-card{
-
-        padding:20px;
-
-    }
-
-}
-
-@media(max-width:576px){
-
-    .sidebar{
-
-        left:-80px;
-
-    }
-
-    .sidebar.expand{
-
-        left:0;
-        width:220px;
-
-    }
-
-    .main-content{
-
-        margin-left:0;
-
-    }
-
-    .main-content.expand{
-
-        margin-left:0;
-
-    }
-
-}
-
-
-#map{
-    height:500px;
-    border-radius:15px;
-}
-
-.card{
-    border:none;
-}
-
-#nearestCard{
-    border-left:6px solid #198754;
-}
-
-.card-body label{
-    color:#f8c9c9;
-
-}
-
-.contact-card:hover{
-    transform:translateY(-3px);transition:.2s
-}
-
-.card-body h5{
-    color:#f8c9c9;
-}
-
-.record-card {
-    max-width: 600px;
-    margin: 70px auto;
-    padding: 35px;
-    border-radius: 20px;
-    background: rgb(255,255,255,0.1);
+body {
+    background: #31010d;
     color: #f8c9c9;
-
+    overflow-x: hidden;
 }
 
-.record-icon {
 
-            width: 100px;
-            height: 100px;
+/* =========================================================
+   SIDEBAR - DEFAULT DESKTOP
+========================================================= */
 
-            border-radius: 50%;
+.sidebar {
+    position: fixed;
 
-            background: #dc3545;
-            color: white;
+    top: 0;
+    left: 0;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+    width: 80px;
+    height: 100vh;
 
-            margin: auto;
+    background: #212529;
 
-            font-size: 42px;
+    z-index: 9998;
+
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    transform: translateX(0);
+
+    transition:
+        width 0.35s ease,
+        transform 0.35s ease;
 }
 
-#timer {
 
-            font-size: 42px;
-            font-weight: bold;
+/* =========================================================
+   SIDEBAR - DESKTOP EXPANDED
+========================================================= */
 
-            margin-top: 25px;
-            margin-bottom: 20px;
-
+.sidebar.expand {
+    width: 260px;
+    transform: translateX(0);
 }
 
-#recordingStatus {
 
-            margin-top: 15px;
+/* =========================================================
+   SIDEBAR LOGO
+========================================================= */
 
+.logo {
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 20px;
+
+    white-space: nowrap;
 }
 
-#stopButton {
+.logo button {
+    background: none;
+    border: none;
 
-            display: none;
+    color: white;
 
+    font-size: 28px;
+
+    cursor: pointer;
+
+    width: 35px;
+    min-width: 35px;
+
+    height: 35px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-text {
+    color: white;
+
+    font-size: 22px;
+    font-weight: bold;
+
+    margin-left: 20px;
+
+    white-space: nowrap;
+
+    display: none;
+}
+
+.sidebar.expand .logo-text {
+    display: block;
+}
+
+
+/* =========================================================
+   SIDEBAR HR
+========================================================= */
+
+.sidebar hr {
+    border: 0;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+
+    margin: 10px 0;
+}
+
+
+/* =========================================================
+   SIDEBAR LINKS
+========================================================= */
+
+.sidebar a {
+    color: white;
+
+    text-decoration: none;
+
+    display: flex;
+
+    align-items: center;
+
+    width: 100%;
+
+    min-height: 60px;
+
+    padding: 18px 22px;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.25s ease,
+        color 0.25s ease;
+}
+
+.sidebar a:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.sidebar a.active {
+    background: #dc3545;
+    color: white;
+}
+
+
+/* =========================================================
+   SIDEBAR ICON
+========================================================= */
+
+.sidebar a i {
+    font-size: 24px;
+
+    width: 35px;
+    min-width: 35px;
+
+    text-align: center;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   SIDEBAR TEXT
+========================================================= */
+
+.sidebar a span:not(.badge) {
+    margin-left: 18px;
+
+    font-weight: 500;
+
+    display: none;
+
+    white-space: nowrap;
+}
+
+.sidebar.expand a span:not(.badge) {
+    display: inline-block;
+}
+
+
+/* =========================================================
+   NEARBY ALERT BADGE
+========================================================= */
+
+.sidebar a .badge {
+    display: none;
+
+    margin-left: auto;
+
+    flex-shrink: 0;
+}
+
+.sidebar.expand a .badge {
+    display: inline-block;
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+.sidebar a:last-child {
+    position: absolute;
+
+    left: 0;
+    bottom: 20px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.main-content {
+    margin-left: 80px;
+
+    padding: 35px;
+
+    min-height: 100vh;
+
+    width: calc(100% - 80px);
+
+    transition:
+        margin-left 0.35s ease,
+        width 0.35s ease;
+}
+
+.main-content.expand {
+    margin-left: 260px;
+
+    width: calc(100% - 260px);
+}
+
+
+/* =========================================================
+   MOBILE MENU BUTTON
+========================================================= */
+
+.mobile-menu-btn {
+    display: none;
+
+    position: fixed;
+
+    top: 15px;
+    left: 15px;
+
+    width: 45px;
+    height: 45px;
+
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #dc3545;
+
+    color: white;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    z-index: 10000;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-menu-btn:hover {
+    background: #bb2d3b;
+}
+
+
+/* =========================================================
+   HEADINGS
+========================================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 600;
+}
+
+h2 {
+    font-weight: 700;
+    color: #f8c9c9;
+}
+
+.page-title {
+    font-weight: 700;
+    color: #dc3545;
+}
+
+
+/* =========================================================
+   SOS BUTTON
+========================================================= */
+
+.sos-btn {
+    width: 180px;
+    height: 180px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: rgb(156, 19, 19);
+
+    color: white;
+
+    font-size: 48px;
+
+    font-weight: bolder;
+
+    box-shadow:
+        0 0 25px rgba(220, 53, 69, 0.5);
+
+    cursor: pointer;
+
+    transition: 0.3s;
+
+    animation: pulse 1.8s infinite;
+}
+
+.sos-btn:hover {
+    transform: scale(1.08);
 }
 
 .sos-btn.holding {
     transform: scale(0.95);
     opacity: 0.8;
+}
+
+
+/* =========================================================
+   SOS ANIMATION
+========================================================= */
+
+@keyframes pulse {
+
+    0% {
+        box-shadow:
+            0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+
+    70% {
+        box-shadow:
+            0 0 0 35px rgba(220, 53, 69, 0);
+    }
+
+    100% {
+        box-shadow:
+            0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+
+/* =========================================================
+   FEATURE CARDS
+========================================================= */
+
+.feature-card {
+    background: rgb(136, 88, 88);
+
+    border-radius: 15px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.08);
+
+    transition: 0.3s;
+
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.feature-card i {
+    font-size: 55px;
+
+    color: #dc3545;
+
+    margin-bottom: 20px;
+}
+
+.feature-card h5 {
+    margin-bottom: 20px;
+
+    font-weight: 600;
+}
+
+.feature-card h5 a {
+    color: #700712;
+
+    text-decoration: none;
+}
+
+.feature-card h5 a:hover {
+    color: #dc3545;
+}
+
+.feature-card .btn {
+    border-radius: 25px;
+
+    padding: 8px 25px;
+}
+
+
+/* =========================================================
+   BOOTSTRAP CARDS
+========================================================= */
+
+.card {
+    border: none;
+
+    border-radius: 15px;
+
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.card-body {
+    padding: 30px;
+}
+
+.card-body h4 {
+    color: #dc3545;
+
+    font-weight: bold;
+}
+
+.card-body h5 {
+    color: #f8c9c9;
+}
+
+.card-body p {
+    margin-top: 10px;
+
+    font-size: 17px;
+
+    color: #f8c9c9;
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+#viewMode,
+#editMode {
+    color: #f8c9c9;
+}
+
+
+/* =========================================================
+   PHONE INPUT
+========================================================= */
+
+.iti {
+    width: 100%;
+}
+
+.iti__country-list {
+    z-index: 9999;
+}
+
+.iti input {
+    height: 48px;
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+.history-card {
+    border: none;
+
+    border-radius: 18px;
+
+    color: #f8c9c9;
+}
+
+
+/* =========================================================
+   TABLES
+========================================================= */
+
+.table {
+    color: #f8c9c9;
+}
+
+.table thead {
+    background: #dc3545;
+
+    color: white;
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+
+    border-color:
+        rgba(255, 255, 255, 0.08);
+}
+
+.table tbody tr:hover {
+    background:
+        rgba(255, 255, 255, 0.06);
+}
+
+
+/* =========================================================
+   BADGES
+========================================================= */
+
+.badge {
+    padding: 8px 14px;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search-box {
+    max-width: 300px;
+}
+
+
+/* =========================================================
+   MAP
+========================================================= */
+
+#map {
+    height: 500px;
+
+    width: 100%;
+
+    border-radius: 15px;
+}
+
+#nearestCard {
+    border-left: 6px solid #198754;
+}
+
+
+/* =========================================================
+   FORM LABELS
+========================================================= */
+
+.card-body label {
+    color: #f8c9c9;
+}
+
+
+/* =========================================================
+   CONTACT CARDS
+========================================================= */
+
+.contact-card {
+    transition: 0.2s;
+}
+
+.contact-card:hover {
+    transform: translateY(-3px);
+}
+
+
+/* =========================================================
+   RECORD / INCIDENT
+========================================================= */
+
+.record-card {
+    max-width: 600px;
+
+    margin: 70px auto;
+
+    padding: 35px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(255, 255, 255, 0.1);
+
+    color: #f8c9c9;
+}
+
+.record-icon {
+    width: 100px;
+    height: 100px;
+
+    border-radius: 50%;
+
+    background: #dc3545;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin: auto;
+
+    font-size: 42px;
+}
+
+
+/* =========================================================
+   RECORDING
+========================================================= */
+
+#timer {
+    font-size: 42px;
+
+    font-weight: bold;
+
+    margin-top: 25px;
+
+    margin-bottom: 20px;
+}
+
+#recordingStatus {
+    margin-top: 15px;
+}
+
+#stopButton {
+    display: none;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn {
+    border-radius: 10px;
+}
+
+.btn-danger {
+    background: #dc3545;
+
+    border-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background: #bb2d3b;
+
+    border-color: #bb2d3b;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 992px) and (min-width: 769px) {
+
+    .sidebar {
+        width: 70px;
+    }
+
+    .sidebar.expand {
+        width: 220px;
+    }
+
+    .main-content {
+        margin-left: 70px;
+
+        width: calc(100% - 70px);
+    }
+
+    .main-content.expand {
+        margin-left: 220px;
+
+        width: calc(100% - 220px);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    /* -----------------------------------------
+       MOBILE BUTTON
+    ----------------------------------------- */
+
+    .mobile-menu-btn {
+        display: flex;
+    }
+
+
+    /* -----------------------------------------
+       SIDEBAR CLOSED
+       
+       IMPORTANT:
+       No !important on transform.
+    ----------------------------------------- */
+
+    .sidebar {
+        width: 250px;
+
+        height: 100vh;
+
+        top: 0;
+        left: 0;
+
+        transform: translateX(-100%);
+
+        transition:
+            transform 0.35s ease;
+
+        overflow-x: hidden;
+        overflow-y: auto;
+
+        z-index: 9998;
+    }
+
+
+    /* -----------------------------------------
+       SIDEBAR OPEN
+    ----------------------------------------- */
+
+    .sidebar.expand {
+        width: 250px;
+
+        transform: translateX(0);
+    }
+
+
+    /* -----------------------------------------
+       LOGO
+    ----------------------------------------- */
+
+    .sidebar .logo {
+        width: 250px;
+
+        height: 70px;
+
+        padding: 20px;
+    }
+
+    .sidebar .logo-text {
+        display: block;
+    }
+
+
+    /* -----------------------------------------
+       LINKS
+    ----------------------------------------- */
+
+    .sidebar a {
+        width: 250px;
+
+        min-height: 60px;
+
+        padding: 18px 22px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: flex-start;
+    }
+
+    .sidebar a span:not(.badge) {
+        display: inline-block;
+    }
+
+
+    /* -----------------------------------------
+       BADGE
+    ----------------------------------------- */
+
+    .sidebar a .badge {
+        display: inline-block;
+    }
+
+
+    /* -----------------------------------------
+       MAIN CONTENT
+    ----------------------------------------- */
+
+    .main-content,
+    .main-content.expand {
+        margin-left: 0;
+
+        width: 100%;
+
+        padding: 20px;
+    }
+
+
+    /* -----------------------------------------
+       SOS
+    ----------------------------------------- */
+
+    .sos-btn {
+        width: 140px;
+
+        height: 140px;
+
+        font-size: 34px;
+    }
+
+
+    /* -----------------------------------------
+       FEATURE CARDS
+    ----------------------------------------- */
+
+    .feature-card {
+        padding: 20px;
+    }
+
+
+    /* -----------------------------------------
+       MAP
+    ----------------------------------------- */
+
+    #map {
+        height: 400px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 576px) {
+
+    .sidebar {
+        width: 230px;
+    }
+
+    .sidebar.expand {
+        width: 230px;
+    }
+
+    .sidebar .logo {
+        width: 230px;
+    }
+
+    .sidebar a {
+        width: 230px;
+    }
+
+    .main-content {
+        padding: 15px;
+    }
+
+    #map {
+        height: 350px;
+    }
+
+    .record-card {
+        margin: 40px auto;
+
+        padding: 25px;
+    }
+
+    .record-icon {
+        width: 80px;
+
+        height: 80px;
+
+        font-size: 32px;
+    }
+
+    #timer {
+        font-size: 34px;
+    }
 }

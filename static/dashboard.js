@@ -1,3 +1,100 @@
+document.addEventListener("DOMContentLoaded", function () {
+
+    const sidebar = document.getElementById("sidebar");
+    const mainContent = document.getElementById("mainContent");
+    const toggleBtn = document.getElementById("toggleBtn");
+    const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+
+    if (!sidebar) {
+        console.error("Sidebar not found!");
+        return;
+    }
+
+
+    /* =====================================================
+       DESKTOP SIDEBAR
+    ===================================================== */
+
+    if (toggleBtn) {
+
+        toggleBtn.addEventListener("click", function (event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            sidebar.classList.toggle("expand");
+
+            if (window.innerWidth > 768 && mainContent) {
+
+                mainContent.classList.toggle("expand");
+
+            }
+
+        });
+
+    }
+
+
+    /* =====================================================
+       MOBILE SIDEBAR
+    ===================================================== */
+
+    if (mobileMenuBtn) {
+
+        mobileMenuBtn.addEventListener("click", function (event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            sidebar.classList.toggle("expand");
+
+        });
+
+    }
+
+
+    /* =====================================================
+       MOBILE LINK CLICK
+    ===================================================== */
+
+    const sidebarLinks =
+        document.querySelectorAll("#sidebar a");
+
+    sidebarLinks.forEach(function (link) {
+
+        link.addEventListener("click", function () {
+
+            if (window.innerWidth <= 768) {
+
+                sidebar.classList.remove("expand");
+
+            }
+
+        });
+
+    });
+
+
+    /* =====================================================
+       RESIZE FIX
+    ===================================================== */
+
+    window.addEventListener("resize", function () {
+
+        if (window.innerWidth > 768) {
+
+            sidebar.classList.remove("expand");
+
+            if (mainContent) {
+                mainContent.classList.remove("expand");
+            }
+
+        }
+
+    });
+
+});
+
 let currentLatitude = null;
 let currentLongitude = null;
 let locationWatchId = null;
@@ -6,6 +103,7 @@ let locationWatchId = null;
 // ========================================
 // START LOCATION
 // ========================================
+
 async function initializeLocationSharing() {
 
     try {
@@ -17,8 +115,14 @@ async function initializeLocationSharing() {
             await response.json();
 
         if (!result.success) {
+
+            console.log(
+                "📍 Could not load location settings."
+            );
+
             return;
         }
+
 
         if (
             result.location_sharing === 1 &&
@@ -50,9 +154,30 @@ async function initializeLocationSharing() {
 
 }
 
+
+// ========================================
+// START LOCATION AUTOMATICALLY
+// ========================================
+
 initializeLocationSharing();
 
+
+// ========================================
+// START LOCATION SHARING
+// ========================================
+
 function startLocationSharing() {
+
+    // Prevent duplicate location watchers
+    if (locationWatchId !== null) {
+
+        console.log(
+            "📍 Location sharing already running."
+        );
+
+        return;
+    }
+
 
     if (!navigator.geolocation) {
 
@@ -62,6 +187,7 @@ function startLocationSharing() {
 
         return;
     }
+
 
     locationWatchId =
         navigator.geolocation.watchPosition(
@@ -82,7 +208,10 @@ function startLocationSharing() {
                 );
 
 
-                // Get location settings
+                // ========================================
+                // GET LOCATION SETTINGS
+                // ========================================
+
                 try {
 
                     const response =
@@ -94,16 +223,15 @@ function startLocationSharing() {
                         await response.json();
 
 
-                    if (
-                        !settings.success
-                    ) {
+                    if (!settings.success) {
+
                         return;
                     }
 
 
-                    // --------------------------------
+                    // ========================================
                     // LOCATION SHARING
-                    // --------------------------------
+                    // ========================================
 
                     if (
                         settings.location_sharing != 1
@@ -117,9 +245,9 @@ function startLocationSharing() {
                     }
 
 
-                    // --------------------------------
+                    // ========================================
                     // LIVE LOCATION
-                    // --------------------------------
+                    // ========================================
 
                     if (
                         settings.live_location_updates == 1
@@ -162,12 +290,18 @@ function startLocationSharing() {
 
             },
 
+
+            // ========================================
+            // LOCATION ERROR
+            // ========================================
+
             function(error) {
 
                 console.error(
                     "Location error:",
                     error
                 );
+
 
                 showSOSStatus(
                     "❌ Location permission is required.",
@@ -176,33 +310,30 @@ function startLocationSharing() {
 
             },
 
+
+            // ========================================
+            // LOCATION OPTIONS
+            // ========================================
+
             {
                 enableHighAccuracy: true,
                 maximumAge: 10000,
                 timeout: 10000
             }
+
         );
 
-        notifyLocationSharing(
-            "Live location sharing is active."
-        );
+
+    notifyLocationSharing(
+        "Live location sharing is active."
+    );
 
 }
 
 
 // ========================================
-// START LOCATION AUTOMATICALLY
+// STOP LOCATION SHARING
 // ========================================
-
-if (
-    LOCATION_SHARING_ENABLED === 1 &&
-    LIVE_LOCATION_ENABLED === 1
-) {
-    console.log("📍 Location sharing enabled");
-    startLocationSharing();
-} else {
-    console.log("📍 Location sharing disabled");
-}
 
 function stopLocationSharing() {
 
@@ -216,6 +347,7 @@ function stopLocationSharing() {
 
     }
 
+
     currentLatitude = null;
     currentLongitude = null;
 
@@ -223,445 +355,487 @@ function stopLocationSharing() {
     notifyLocationSharing(
         "Live location sharing has stopped."
     );
+
 }
 
-// ========================================
-// DANGER ZONE DETECTION
-// ========================================
-
-let notifiedDangerZones = new Set();
-
-async function checkDangerZones() {
-
-    if (
-        currentLatitude === null ||
-        currentLongitude === null
-    ) {
-        return;
-    }
-
-    try {
-
-        const response = await fetch(
-            `/check-danger-zones?latitude=${currentLatitude}&longitude=${currentLongitude}`
-        );
-
-        const result = await response.json();
-
-        if (!result.success) {
-            return;
-        }
-
-
-        // Detection disabled
-        if (!result.danger) {
-            return;
-        }
-
-
-        // Alerts disabled
-        if (!result.alerts_enabled) {
-            return;
-        }
-
-
-        result.zones.forEach(function(zone) {
-
-            // Don't repeatedly notify
-            if (
-                notifiedDangerZones.has(zone.id)
-            ) {
-                return;
-            }
-
-
-            notifiedDangerZones.add(zone.id);
-
-
-            notifyDangerZone(
-                `You are near a reported danger zone: ${zone.incident_type}.`
-            );
-
-
-            console.log(
-                "⚠️ Danger zone detected:",
-                zone
-            );
-
-        });
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Danger zone check error:",
-            error
-        );
-
-    }
-}
 
 // ========================================
 // SOS BUTTON
 // ========================================
 
-const sosButton =
-    document.getElementById("sosButton");
-
-const sosStatus =
-    document.getElementById("sosStatus");
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
 
 
-let sosHoldTimer = null;
-
-let sosCountdownTimer = null;
-
-let sosTriggered = false;
-
-const SOS_HOLD_TIME = 4000;
+        const sosButton =
+            document.getElementById(
+                "sosButton"
+            );
 
 
-// ========================================
-// START SOS HOLD
-// ========================================
-
-function startSOSHold(event) {
-
-    event.preventDefault();
-
-    if (sosTriggered) {
-        return;
-    }
-
-    console.log("🚨 SOS hold started");
-
-    sosButton.classList.add("holding");
-
-    let remaining = 4;
-
-    sosButton.innerHTML = "Hold... 4";
+        const sosStatus =
+            document.getElementById(
+                "sosStatus"
+            );
 
 
-    // Countdown
+        // ========================================
+        // CHECK SOS BUTTON
+        // ========================================
 
-    sosCountdownTimer = setInterval(function () {
+        if (!sosButton) {
 
-        remaining--;
+            console.error(
+                "❌ SOS button not found."
+            );
 
-        if (remaining > 0) {
+            return;
+        }
+
+
+        console.log(
+            "🚨 SOS button initialized."
+        );
+
+
+        let sosHoldTimer = null;
+
+        let sosCountdownTimer = null;
+
+        let sosTriggered = false;
+
+        const SOS_HOLD_TIME = 4000;
+
+
+        // ========================================
+        // START SOS HOLD
+        // ========================================
+
+        function startSOSHold(event) {
+
+            event.preventDefault();
+
+
+            if (sosTriggered) {
+
+                return;
+            }
+
+
+            console.log(
+                "🚨 SOS hold started"
+            );
+
+
+            sosButton.classList.add(
+                "holding"
+            );
+
+
+            let remaining = 4;
+
 
             sosButton.innerHTML =
-                "Hold... " + remaining;
+                "Hold... 4";
+
+
+            // ========================================
+            // COUNTDOWN
+            // ========================================
+
+            sosCountdownTimer =
+                setInterval(function() {
+
+
+                    remaining--;
+
+
+                    if (
+                        remaining > 0
+                    ) {
+
+                        sosButton.innerHTML =
+                            "Hold... " +
+                            remaining;
+
+                    }
+
+                }, 1000);
+
+
+            // ========================================
+            // TRIGGER AFTER 4 SECONDS
+            // ========================================
+
+            sosHoldTimer =
+                setTimeout(function() {
+
+
+                    clearInterval(
+                        sosCountdownTimer
+                    );
+
+
+                    sosCountdownTimer =
+                        null;
+
+
+                    sosTriggered =
+                        true;
+
+
+                    sosButton.classList.remove(
+                        "holding"
+                    );
+
+
+                    sosButton.innerHTML =
+                        "⏳ Sending SOS...";
+
+
+                    console.log(
+                        "🚨 4 SECOND SOS TRIGGERED"
+                    );
+
+
+                    triggerSOS();
+
+
+                }, SOS_HOLD_TIME);
 
         }
 
-    }, 1000);
 
+        // ========================================
+        // CANCEL HOLD
+        // ========================================
 
-    // Trigger after 4 seconds
+        function cancelSOSHold(event) {
 
-    sosHoldTimer = setTimeout(function () {
+            event.preventDefault();
 
-        clearInterval(sosCountdownTimer);
 
-        sosCountdownTimer = null;
+            if (sosTriggered) {
 
-        sosTriggered = true;
+                return;
+            }
 
-        sosButton.classList.remove("holding");
 
-        sosButton.innerHTML =
-            "⏳ Sending SOS...";
+            if (sosHoldTimer) {
 
+                clearTimeout(
+                    sosHoldTimer
+                );
 
-        console.log(
-            "🚨 4 SECOND SOS TRIGGERED"
-        );
+                sosHoldTimer = null;
 
+            }
 
-        triggerSOS();
 
-    }, SOS_HOLD_TIME);
-}
+            if (sosCountdownTimer) {
 
+                clearInterval(
+                    sosCountdownTimer
+                );
 
-// ========================================
-// CANCEL HOLD
-// ========================================
+                sosCountdownTimer = null;
 
-function cancelSOSHold(event) {
+            }
 
-    event.preventDefault();
 
-    if (sosTriggered) {
-        return;
-    }
-
-
-    if (sosHoldTimer) {
-
-        clearTimeout(sosHoldTimer);
-
-        sosHoldTimer = null;
-
-    }
-
-
-    if (sosCountdownTimer) {
-
-        clearInterval(
-            sosCountdownTimer
-        );
-
-        sosCountdownTimer = null;
-
-    }
-
-
-    sosButton.classList.remove(
-        "holding"
-    );
-
-    sosButton.innerHTML = "SOS";
-
-
-    console.log(
-        "SOS hold cancelled"
-    );
-}
-
-
-// ========================================
-// TRIGGER SOS
-// ========================================
-
-function triggerSOS() {
-
-    console.log(
-        "🚨 Triggering SOS..."
-    );
-
-
-    if (
-        currentLatitude === null ||
-        currentLongitude === null
-    ) {
-
-        showSOSStatus(
-            "📍 Location is not available yet.",
-            "danger"
-        );
-
-
-        sosTriggered = false;
-
-        sosButton.innerHTML = "SOS";
-
-        return;
-    }
-
-
-    console.log(
-        "🚨 SOS LOCATION:",
-        currentLatitude,
-        currentLongitude
-    );
-
-
-    sendSOS(
-        currentLatitude,
-        currentLongitude
-    );
-}
-
-
-// ========================================
-// MOUSE EVENTS
-// ========================================
-
-sosButton.addEventListener(
-    "mousedown",
-    startSOSHold
-);
-
-sosButton.addEventListener(
-    "mouseup",
-    cancelSOSHold
-);
-
-sosButton.addEventListener(
-    "mouseleave",
-    cancelSOSHold
-);
-
-
-// ========================================
-// TOUCH EVENTS
-// ========================================
-
-sosButton.addEventListener(
-    "touchstart",
-    startSOSHold,
-    { passive: false }
-);
-
-sosButton.addEventListener(
-    "touchend",
-    cancelSOSHold,
-    { passive: false }
-);
-
-sosButton.addEventListener(
-    "touchcancel",
-    cancelSOSHold,
-    { passive: false }
-);
-
-
-// ========================================
-// SEND SOS
-// ========================================
-
-async function sendSOS(
-    latitude,
-    longitude
-) {
-
-    sosButton.disabled = true;
-
-
-    sosButton.innerHTML =
-        "⏳ Sending SOS...";
-
-
-    showSOSStatus(
-        "🚨 Sending emergency alert...",
-        "danger"
-    );
-
-
-    try {
-
-        const response =
-            await fetch(
-                "/sos",
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body: JSON.stringify({
-
-                        latitude:
-                            latitude,
-
-                        longitude:
-                            longitude
-
-                    })
-
-                }
+            sosButton.classList.remove(
+                "holding"
             );
 
 
-        const result =
-            await response.json();
+            sosButton.innerHTML =
+                "SOS";
 
 
-        console.log(
-            "SOS response:",
-            result
-        );
-
-
-        if (result.success) {
-
-            showSOSStatus(
-                "🚨 Emergency SOS sent successfully.",
-                "success"
+            console.log(
+                "SOS hold cancelled"
             );
 
         }
 
-        else {
+
+        // ========================================
+        // TRIGGER SOS
+        // ========================================
+
+        function triggerSOS() {
+
+            console.log(
+                "🚨 Triggering SOS..."
+            );
+
+
+            // ========================================
+            // CHECK LOCATION
+            // ========================================
+
+            if (
+                currentLatitude === null ||
+                currentLongitude === null
+            ) {
+
+                showSOSStatus(
+                    "📍 Location is not available yet.",
+                    "danger"
+                );
+
+
+                sosTriggered =
+                    false;
+
+
+                sosButton.innerHTML =
+                    "SOS";
+
+
+                return;
+            }
+
+
+            console.log(
+                "🚨 SOS LOCATION:",
+                currentLatitude,
+                currentLongitude
+            );
+
+
+            sendSOS(
+                currentLatitude,
+                currentLongitude
+            );
+
+        }
+
+
+        // ========================================
+        // MOUSE EVENTS
+        // ========================================
+
+        sosButton.addEventListener(
+            "mousedown",
+            startSOSHold
+        );
+
+
+        sosButton.addEventListener(
+            "mouseup",
+            cancelSOSHold
+        );
+
+
+        sosButton.addEventListener(
+            "mouseleave",
+            cancelSOSHold
+        );
+
+
+        // ========================================
+        // TOUCH EVENTS
+        // ========================================
+
+        sosButton.addEventListener(
+            "touchstart",
+            startSOSHold,
+            {
+                passive: false
+            }
+        );
+
+
+        sosButton.addEventListener(
+            "touchend",
+            cancelSOSHold,
+            {
+                passive: false
+            }
+        );
+
+
+        sosButton.addEventListener(
+            "touchcancel",
+            cancelSOSHold,
+            {
+                passive: false
+            }
+        );
+
+
+        // ========================================
+        // SEND SOS
+        // ========================================
+
+        async function sendSOS(
+            latitude,
+            longitude
+        ) {
+
+
+            sosButton.disabled =
+                true;
+
+
+            sosButton.innerHTML =
+                "⏳ Sending SOS...";
+
 
             showSOSStatus(
-                "❌ " +
-                (
-                    result.message ||
-                    "SOS could not be sent."
-                ),
+                "🚨 Sending emergency alert...",
                 "danger"
             );
 
+
+            try {
+
+
+                const response =
+                    await fetch(
+                        "/sos",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+
+                                latitude:
+                                    latitude,
+
+                                longitude:
+                                    longitude
+
+                            })
+
+                        }
+                    );
+
+
+                // ========================================
+                // CHECK RESPONSE
+                // ========================================
+
+                const result =
+                    await response.json();
+
+
+                console.log(
+                    "SOS response:",
+                    result
+                );
+
+
+                // ========================================
+                // SUCCESS
+                // ========================================
+
+                if (
+                    result.success
+                ) {
+
+                    showSOSStatus(
+                        "🚨 Emergency SOS sent successfully.",
+                        "success"
+                    );
+
+                }
+
+
+                // ========================================
+                // ERROR
+                // ========================================
+
+                else {
+
+                    showSOSStatus(
+                        "❌ " +
+                        (
+                            result.message ||
+                            "SOS could not be sent."
+                        ),
+                        "danger"
+                    );
+
+                }
+
+            }
+
+
+            catch (error) {
+
+                console.error(
+                    "SOS error:",
+                    error
+                );
+
+
+                showSOSStatus(
+                    "❌ Unable to send SOS.",
+                    "danger"
+                );
+
+            }
+
+
+            // ========================================
+            // RESET SOS
+            // ========================================
+
+            sosTriggered =
+                false;
+
+
+            sosButton.disabled =
+                false;
+
+
+            sosButton.innerHTML =
+                "SOS";
+
         }
 
+
+        // ========================================
+        // STATUS MESSAGE
+        // ========================================
+
+        function showSOSStatus(
+            message,
+            type
+        ) {
+
+
+            if (!sosStatus) {
+
+                return;
+            }
+
+
+            sosStatus.style.display =
+                "block";
+
+
+            sosStatus.className =
+                "alert alert-" +
+                type +
+                " mt-3";
+
+
+            sosStatus.innerHTML =
+                message;
+
+        }
+
+
     }
-
-    catch (error) {
-
-        console.error(
-            "SOS error:",
-            error
-        );
-
-
-        showSOSStatus(
-            "❌ Unable to send SOS.",
-            "danger"
-        );
-
-    }
-
-
-    // ========================================
-    // RESET SOS
-    // ========================================
-
-    sosTriggered = false;
-
-
-    sosButton.disabled = false;
-
-
-    sosButton.innerHTML =
-        "SOS";
-
-}
-
-
-// ========================================
-// STATUS MESSAGE
-// ========================================
-
-function showSOSStatus(
-    message,
-    type
-) {
-
-    if (!sosStatus) {
-        return;
-    }
-
-
-    sosStatus.style.display =
-        "block";
-
-
-    sosStatus.className =
-        "alert alert-" +
-        type +
-        " mt-3";
-
-
-    sosStatus.innerHTML =
-        message;
-
-}
+);
 
 
 // ========================================
@@ -1006,53 +1180,145 @@ function notifyDangerZone(message) {
 // DANGER ZONE DETECTION
 // ========================================
 
+/* ========================================
+   DANGER ZONE NOTIFICATION
+======================================== */
+
 let notifiedDangerZones = new Set();
+
+
+/* ========================================
+   CHECK DANGER ZONES
+======================================== */
 
 async function checkDangerZones() {
 
+    // ----------------------------------------
+    // Make sure location is available
+    // ----------------------------------------
+
+    if (
+        typeof currentLatitude === "undefined" ||
+        typeof currentLongitude === "undefined" ||
+        currentLatitude === null ||
+        currentLongitude === null
+    ) {
+
+        return;
+    }
+
+
     try {
 
-        // First check user's setting
+        // ========================================
+        // CHECK USER NOTIFICATION SETTINGS
+        // ========================================
+
         const settingsResponse =
             await fetch("/get-notification-settings");
 
+
         const settingsResult =
             await settingsResponse.json();
+
 
         if (
             !settingsResult.success ||
             !settingsResult.danger_zone_alerts
         ) {
+
             return;
         }
 
 
-        // Get nearby danger zones
-        const response =
-            await fetch("/nearby-danger-zones");
+        // ========================================
+        // CHECK NEARBY DANGER ZONES
+        // ========================================
+
+        const response = await fetch(
+            `/check-danger-zones?latitude=${currentLatitude}&longitude=${currentLongitude}`
+        );
+
 
         const result =
             await response.json();
 
 
         if (!result.success) {
+
             return;
         }
 
 
-        result.danger_zones.forEach(function(zone) {
+        // ========================================
+        // NO DANGER
+        // ========================================
 
-            // Don't notify repeatedly for the same incident
-            if (notifiedDangerZones.has(zone.id)) {
+        if (!result.danger) {
+
+            return;
+        }
+
+
+        // ========================================
+        // ALERTS DISABLED
+        // ========================================
+
+        if (!result.alerts_enabled) {
+
+            return;
+        }
+
+
+        // ========================================
+        // PROCESS DANGER ZONES
+        // ========================================
+
+        if (
+            !result.zones ||
+            result.zones.length === 0
+        ) {
+
+            return;
+        }
+
+
+        result.zones.forEach(function(zone) {
+
+
+            // ------------------------------------
+            // Don't notify same incident repeatedly
+            // ------------------------------------
+
+            if (
+                notifiedDangerZones.has(zone.id)
+            ) {
+
                 return;
             }
 
 
-            notifiedDangerZones.add(zone.id);
+            // ------------------------------------
+            // Mark as notified
+            // ------------------------------------
 
+            notifiedDangerZones.add(
+                zone.id
+            );
+
+
+            // ------------------------------------
+            // Show notification
+            // ------------------------------------
 
             notifyDangerZone(
-                `Danger zone nearby: ${zone.incident_type}`
+                `You are near a reported danger zone: ${zone.incident_type}.`
+            );
+
+
+            console.log(
+                "⚠️ Danger zone detected:",
+                zone
             );
 
         });
@@ -1062,18 +1328,25 @@ async function checkDangerZones() {
     catch (error) {
 
         console.error(
-            "Danger zone detection error:",
+            "Danger zone check error:",
             error
         );
 
     }
+
 }
 
-// ========================================
-// CHECK DANGER ZONES
-// ========================================
+
+/* ========================================
+   START DANGER ZONE CHECK
+======================================== */
 
 checkDangerZones();
+
+
+/* ========================================
+   CHECK EVERY 10 SECONDS
+======================================== */
 
 setInterval(
     checkDangerZones,

@@ -21,6 +21,9 @@
     <div id="google_translate_element"
      style="display:none;">
 </div>
+ <button type="button" class="mobile-menu-btn" id="mobileMenuBtn">
+    <i class="bi bi-list"></i>
+    </button>
 
 <div class="sidebar" id="sidebar">
 
@@ -85,7 +88,7 @@
             <div>
 
                 <h2>
-                    Welcome, {{ username }} 👋
+                    Welcome, {{ user.fullname }} 👋
                 </h2>
 
             </div>
@@ -286,20 +289,7 @@
 
 </div>
 
-<script>
 
-const sidebar = document.getElementById("sidebar");
-const main = document.getElementById("mainContent");
-
-document.getElementById("toggleBtn").onclick = function(){
-
-    sidebar.classList.toggle("expand");
-
-    main.classList.toggle("expand");
-
-}
-
-</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 
