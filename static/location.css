@@ -1,0 +1,42 @@
+body{
+    
+    background-color:#31010d;
+}
+
+.card{
+
+    border:none;
+
+    border-radius:20px;
+    background:rgb(136,88,88);
+
+
+}
+
+#map{
+
+    height:500px;
+
+    width:100%;
+
+    border-radius:15px;
+
+    border:2px solid #dee2e6;
+
+}
+
+h2{
+
+    font-weight:bold;
+
+}
+
+.modal-content{
+
+    background-color:#31010d;
+
+    color:#f8c9c9;
+
+    border:none;
+
+}

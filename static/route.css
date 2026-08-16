@@ -1,0 +1,399 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Trebuchet MS',sans-serif;
+}
+
+body{
+    background:#31010d;
+    color:#f8c9c9;
+    overflow:hidden;
+    overflow-y:auto;
+    min-height:100vh;
+}
+
+/* ===========================
+Navbar
+=========================== */
+
+.navbar{
+    background:#1f1f1f;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    padding:15px 25px;
+}
+
+.navbar-brand{
+    font-size:26px;
+    font-weight:bold;
+}
+
+.navbar-brand span{
+    color:#dc3545;
+}
+
+.btn-back{
+    background:#dc3545;
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:8px 18px;
+    transition:.3s;
+}
+
+.btn-back:hover{
+    background:#b71c2b;
+    color:#fff;
+}
+
+.card{
+
+    border:none;
+    color:#f8c9c9;
+
+    border-radius:15px;
+    background:rgb(255,255,255,0.1);
+
+}
+
+.card-body{
+
+    padding:30px;
+    
+
+}
+
+
+/* ===========================
+Map
+=========================== */
+
+#map{
+
+    height:500px;
+
+    width:100%;
+
+    border-radius:15px;
+
+    border:2px solid #dee2e6;
+
+}
+
+/* ===========================
+Floating Panel
+=========================== */
+
+.route-panel{
+
+    position:absolute;
+
+    top:95px;
+
+    left:30px;
+
+    width:360px;
+
+    background:rgba(33,37,41,.95);
+
+    backdrop-filter:blur(15px);
+
+    border-radius:20px;
+
+    padding:25px;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.4);
+
+    z-index:999;
+
+}
+
+.route-panel h4{
+
+    color:white;
+
+    margin-bottom:20px;
+
+}
+
+.route-panel label{
+
+    color:#f8c9c9;
+
+    margin-bottom:6px;
+
+    font-weight:600;
+
+}
+
+.route-panel input{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:12px;
+
+    margin-bottom:18px;
+
+    background:rgba(255,255,255,.12);
+
+    color:white;
+
+}
+
+.route-panel input::placeholder{
+
+    color:#ccc;
+
+}
+
+.route-panel input:focus{
+
+    outline:none;
+
+    background:rgba(255,255,255,.18);
+
+}
+
+/* ===========================
+Buttons
+=========================== */
+
+.route-btn{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:13px;
+
+    font-weight:bold;
+
+    background:#dc3545;
+
+    color:white;
+
+    transition:.3s;
+
+}
+
+.route-btn:hover{
+
+    background:#b71c2b;
+
+    transform:translateY(-2px);
+
+}
+
+.current-btn{
+
+    width:100%;
+
+    margin-top:12px;
+
+    border:none;
+
+    border-radius:12px;
+
+    padding:13px;
+
+    background:#198754;
+
+    color:white;
+
+    font-weight:bold;
+
+}
+
+.current-btn:hover{
+
+    background:#157347;
+
+}
+
+/* ===========================
+Route Info
+=========================== */
+
+.route-info{
+
+    margin-top:20px;
+
+    background:rgba(255,255,255,.08);
+
+    border-radius:15px;
+
+    padding:15px;
+
+}
+
+.route-info h6{
+
+    color:white;
+
+    margin-bottom:10px;
+
+}
+
+.route-info p{
+
+    margin:5px 0;
+
+    color:#f8c9c9;
+
+}
+
+/* ===========================
+Danger Alert
+=========================== */
+
+.danger-alert{
+
+    margin-top:15px;
+
+    background:#dc3545;
+
+    color:white;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    display:none;
+
+    font-weight:bold;
+
+}
+
+/* ===========================
+Legend
+=========================== */
+
+.legend{
+
+    position:absolute;
+
+    bottom:25px;
+
+    right:25px;
+
+    background:rgba(33,37,41,.95);
+
+    padding:18px;
+
+    border-radius:15px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.4);
+
+    z-index:999;
+
+}
+
+.legend h6{
+
+    color:white;
+
+    margin-bottom:12px;
+
+}
+
+.legend-item{
+
+    display:flex;
+
+    align-items:center;
+
+    margin-bottom:10px;
+
+}
+
+.legend-color{
+
+    width:18px;
+
+    height:18px;
+
+    border-radius:50%;
+
+    margin-right:10px;
+
+}
+
+.safe{
+
+    background:#28a745;
+
+}
+
+.danger{
+
+    background:#dc3545;
+
+}
+
+.user{
+
+    background:#0d6efd;
+
+}
+
+/* ===========================
+Responsive
+=========================== */
+
+@media(max-width:992px){
+
+    .route-panel{
+
+        position:relative;
+
+        width:95%;
+
+        margin:20px auto;
+
+        top:0;
+
+        left:0;
+
+    }
+
+    #map{
+
+        height:500px;
+
+    }
+
+    .legend{
+
+        position:relative;
+
+        right:0;
+
+        bottom:0;
+
+        margin:20px;
+
+    }
+
+}
+
+@media(max-width:576px){
+
+    .route-panel{
+
+        padding:20px;
+
+    }
+
+    .navbar-brand{
+
+        font-size:22px;
+
+    }
+
+}

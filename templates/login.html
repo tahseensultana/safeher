@@ -13,50 +13,39 @@
 </head>
 
 <body class="auth-page ">
-
     <div class="card auth-card">
-
         <div class="card-body">
-
             <h2 class="text-center auth-title mb-4">
              Login
             </h2>
-
-            <form>
-
+            <form method="POST" action="/login">
                 <div class="mb-3">
                     <label>Email</label>
                     <input type="email"
-                       class="form-control"
-                       placeholder="Enter Email">
+                        name="email"
+                        class="form-control"
+                        placeholder="Enter Email"
+                        required>
                 </div>
-
                 <div class="mb-3">
                     <label>Password</label>
                     <input type="password"
+                       name="password"
                        class="form-control"
-                       placeholder="Enter Password">
+                       placeholder="Enter Password"
+                       required>
                 </div>
-
                 <button class="btn btn-danger btn-auth w-100">
                     Login
                 </button>
-
                 <p class="text-center mt-3">
-
                 Don't have an account?
-
                     <a href="/register" class="auth-link">
                     Register
                     </a>
-
                 </p>
-
             </form>
-
         </div>
-
     </div>
-
 </body>
 </html>

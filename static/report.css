@@ -1,0 +1,465 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Trebuchet MS','Lucida Sans Unicode','Lucida Grande','Lucida Sans',Arial,sans-serif;
+}
+
+body{
+
+    min-height:100vh;
+
+    background:linear-gradient(135deg,#2b020d,#430614,#6b0d22);
+
+    color:#f8c9c9;
+
+    overflow-x:hidden;
+
+}
+
+/* ==========================
+Container
+========================== */
+
+.container{
+
+    padding-top:50px;
+
+    padding-bottom:50px;
+
+}
+
+/* ==========================
+Report Card
+========================== */
+
+.report-card{
+
+    background:rgba(255,255,255,.08);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    border-radius:25px;
+
+    padding:45px;
+
+    box-shadow:0 20px 45px rgba(0,0,0,.35);
+
+    transition:.35s;
+
+}
+
+.report-card:hover{
+
+    transform:translateY(-5px);
+
+}
+
+/* ==========================
+Header
+========================== */
+
+.report-icon{
+
+    width:90px;
+
+    height:90px;
+
+    margin:auto;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    border-radius:50%;
+
+    background:linear-gradient(45deg,#c1121f,#dc3545);
+
+    color:white;
+
+    font-size:42px;
+
+    animation:floating 3s ease-in-out infinite;
+
+    box-shadow:0 0 30px rgba(220,53,69,.45);
+
+}
+
+.report-card h2{
+
+    margin-top:20px;
+
+    color:white;
+
+    font-weight:bold;
+
+}
+
+.report-card p{
+
+    color:#dcb4b4;
+
+    margin-top:10px;
+
+}
+
+/* ==========================
+Labels
+========================== */
+
+.form-label{
+
+    color:#f8c9c9;
+
+    font-weight:600;
+
+    margin-bottom:8px;
+
+}
+
+/* ==========================
+Inputs
+========================== */
+
+.form-control,
+.form-select{
+
+    height:52px;
+
+    border-radius:15px;
+
+    background:rgba(255,255,255,.08);
+
+    border:1px solid rgba(255,255,255,.2);
+
+    color:white;
+
+    transition:.3s;
+
+}
+
+textarea.form-control{
+
+    height:180px;
+
+    resize:none;
+
+    padding-top:15px;
+
+}
+
+.form-control::placeholder{
+
+    color:#d8b6b6;
+
+}
+
+.form-control:focus,
+.form-select:focus{
+
+    background:rgba(255,255,255,.12);
+
+    border-color:#dc3545;
+
+    color:white;
+
+    box-shadow:0 0 18px rgba(220,53,69,.4);
+
+}
+
+.form-select option{
+
+    color:black;
+
+}
+
+/* ==========================
+Location Button
+========================== */
+
+#locationBtn{
+
+    border-radius:15px;
+
+    padding:12px 28px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+#locationBtn:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 10px 20px rgba(220,53,69,.35);
+
+}
+
+/* ==========================
+Image Upload
+========================== */
+
+#imageInput{
+
+    background:rgba(255,255,255,.08);
+
+    color:white;
+
+}
+
+#preview{
+
+    width:100%;
+
+    max-height:320px;
+
+    object-fit:cover;
+
+    border-radius:18px;
+
+    border:2px solid rgba(255,255,255,.2);
+
+    margin-top:15px;
+
+    display:none;
+
+}
+
+/* ==========================
+Checkbox
+========================== */
+
+.form-check{
+
+    margin-top:10px;
+
+}
+
+.form-check-input{
+
+    cursor:pointer;
+
+}
+
+.form-check-label{
+
+    color:#f8c9c9;
+
+}
+
+/* ==========================
+Buttons
+========================== */
+
+.btn-danger{
+
+    background:linear-gradient(45deg,#b31217,#dc3545);
+
+    border:none;
+
+    border-radius:15px;
+
+    height:55px;
+
+    font-size:18px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.btn-danger:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 12px 25px rgba(220,53,69,.45);
+
+}
+
+.btn-outline-light{
+
+    height:55px;
+
+    border-radius:15px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.btn-outline-light:hover{
+
+    background:#dc3545;
+
+    border-color:#dc3545;
+
+    color:white;
+
+}
+
+/* ==========================
+Alerts
+========================== */
+
+.alert{
+
+    border-radius:15px;
+
+    margin-bottom:25px;
+
+}
+
+/* ==========================
+Character Counter
+========================== */
+
+small{
+
+    color:#d7b0b0 !important;
+
+}
+
+/* ==========================
+Scrollbar
+========================== */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#2b020d;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#dc3545;
+
+    border-radius:30px;
+
+}
+
+::-webkit-scrollbar-thumb:hover{
+
+    background:#ff4d5f;
+
+}
+
+/* ==========================
+Animations
+========================== */
+
+@keyframes floating{
+
+    0%{
+
+        transform:translateY(0);
+
+    }
+
+    50%{
+
+        transform:translateY(-8px);
+
+    }
+
+    100%{
+
+        transform:translateY(0);
+
+    }
+
+}
+
+/* ==========================
+Responsive
+========================== */
+
+@media(max-width:992px){
+
+    .report-card{
+
+        padding:35px;
+
+    }
+
+}
+
+@media(max-width:768px){
+
+    .report-card{
+
+        padding:25px;
+
+        border-radius:18px;
+
+    }
+
+    .report-icon{
+
+        width:70px;
+
+        height:70px;
+
+        font-size:32px;
+
+    }
+
+    .report-card h2{
+
+        font-size:26px;
+
+    }
+
+    .btn-danger,
+    .btn-outline-light{
+
+        height:50px;
+
+    }
+
+}
+
+@media(max-width:576px){
+
+    .container{
+
+        padding:20px;
+
+    }
+
+    .report-card{
+
+        padding:20px;
+
+    }
+
+    .report-icon{
+
+        width:60px;
+
+        height:60px;
+
+        font-size:28px;
+
+    }
+
+    .report-card h2{
+
+        font-size:22px;
+
+    }
+
+}

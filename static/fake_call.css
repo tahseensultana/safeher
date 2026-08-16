@@ -1,0 +1,612 @@
+/* =========================================
+   Global
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family:
+        'Trebuchet MS',
+        'Lucida Sans Unicode',
+        'Lucida Grande',
+        Arial,
+        sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: #31010d;
+    color: #f8c9c9;
+    overflow: hidden;
+}
+
+
+/* =========================================
+   Main Page
+========================================= */
+
+.fake-call-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+
+/* =========================================
+   Setup Card
+========================================= */
+
+.setup-card {
+    width: 100%;
+    max-width: 450px;
+
+    background: rgba(255, 255, 255, 0.10);
+
+    backdrop-filter: blur(15px);
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    border-radius: 25px;
+
+    padding: 40px;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+.setup-icon {
+    width: 85px;
+    height: 85px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #dc3545;
+
+    color: white;
+
+    font-size: 38px;
+
+    box-shadow:
+        0 0 30px rgba(220, 53, 69, 0.45);
+}
+
+.setup-card h2 {
+    color: #ffffff;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.setup-card > p {
+    color: #e6b6b6;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+
+/* =========================================
+   Form
+========================================= */
+
+.form-label {
+    color: #f8c9c9;
+    font-weight: 600;
+}
+
+.form-control,
+.form-select {
+    background: rgba(255, 255, 255, 0.10);
+
+    color: white;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+
+    border-radius: 12px;
+
+    padding: 12px;
+}
+
+.form-control::placeholder {
+    color: #d8aaaa;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background: rgba(255, 255, 255, 0.15);
+
+    color: white;
+
+    border-color: #dc3545;
+
+    box-shadow:
+        0 0 12px rgba(220, 53, 69, 0.35);
+}
+
+.form-select option {
+    color: black;
+}
+
+
+/* =========================================
+   Buttons
+========================================= */
+
+.btn-danger {
+    background: #9c1313;
+
+    border: none;
+
+    border-radius: 25px;
+
+    padding: 13px;
+
+    font-weight: 700;
+
+    transition: 0.3s;
+}
+
+.btn-danger:hover {
+    background: #dc3545;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(220, 53, 69, 0.35);
+}
+
+.btn-outline-light {
+    border-radius: 25px;
+
+    padding: 12px;
+
+    color: #f8c9c9;
+
+    border-color: #f8c9c9;
+}
+
+.btn-outline-light:hover {
+    background: #dc3545;
+
+    border-color: #dc3545;
+
+    color: white;
+}
+
+
+/* =========================================
+   Countdown
+========================================= */
+
+.countdown-screen {
+    width: 100%;
+    min-height: 100vh;
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #62051b 0%,
+            #31010d 60%,
+            #1b0007 100%
+        );
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    z-index: 1000;
+}
+
+.countdown-icon {
+    width: 100px;
+    height: 100px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #dc3545;
+
+    color: white;
+
+    font-size: 45px;
+
+    animation: pulse 1.5s infinite;
+
+    margin-bottom: 25px;
+}
+
+.countdown-screen h3 {
+    color: white;
+
+    margin-bottom: 20px;
+}
+
+.countdown-number {
+    font-size: 90px;
+
+    font-weight: 700;
+
+    color: white;
+
+    margin-bottom: 25px;
+}
+
+
+/* =========================================
+   Incoming Call
+========================================= */
+
+.incoming-call {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 2000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            180deg,
+            #151515,
+            #050505
+        );
+}
+
+.incoming-content {
+    width: 100%;
+
+    max-width: 500px;
+
+    padding: 40px;
+}
+
+.caller-avatar {
+    width: 130px;
+    height: 130px;
+
+    margin: 0 auto 25px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #333;
+
+    border: 3px solid #777;
+
+    color: #ddd;
+
+    font-size: 65px;
+
+    animation: callerPulse 2s infinite;
+}
+
+.incoming-label {
+    color: #aaa;
+
+    font-size: 18px;
+
+    margin-bottom: 8px;
+}
+
+.incoming-content h1 {
+    color: white;
+
+    font-size: 42px;
+
+    font-weight: 700;
+
+    margin-bottom: 8px;
+}
+
+.caller-number {
+    color: #888;
+
+    margin-bottom: 60px;
+}
+
+
+/* =========================================
+   Call Buttons
+========================================= */
+
+.call-actions {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 80px;
+}
+
+.call-button {
+    border: none;
+
+    width: 80px;
+    height: 80px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: white;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.call-button i {
+    font-size: 28px;
+
+    margin-bottom: 5px;
+}
+
+.call-button span {
+    font-size: 12px;
+}
+
+.call-button:hover {
+    transform: scale(1.1);
+}
+
+.call-button.decline {
+    background: #dc3545;
+
+    box-shadow:
+        0 8px 25px rgba(220, 53, 69, 0.35);
+}
+
+.call-button.accept {
+    background: #28a745;
+
+    box-shadow:
+        0 8px 25px rgba(40, 167, 69, 0.35);
+}
+
+
+/* =========================================
+   Active Call
+========================================= */
+
+.active-call {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 3000;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            180deg,
+            #171717,
+            #050505
+        );
+}
+
+.active-content {
+    width: 100%;
+
+    max-width: 500px;
+
+    padding: 40px;
+}
+
+.active-avatar {
+    width: 130px;
+    height: 130px;
+
+    margin: 0 auto 25px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #333;
+
+    color: #ddd;
+
+    font-size: 65px;
+}
+
+.active-content > p {
+    color: #aaa;
+
+    font-size: 17px;
+
+    margin-bottom: 5px;
+}
+
+.active-content h1 {
+    color: white;
+
+    font-size: 42px;
+
+    margin-bottom: 20px;
+}
+
+.call-timer {
+    color: #aaa;
+
+    font-size: 22px;
+
+    margin-bottom: 20px;
+}
+
+.call-status {
+    color: #28a745;
+
+    margin-bottom: 50px;
+}
+
+.end-call-button {
+    width: 85px;
+    height: 85px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #dc3545;
+
+    color: white;
+
+    font-size: 27px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px rgba(220, 53, 69, 0.4);
+
+    transition: 0.3s;
+}
+
+.end-call-button:hover {
+    transform: scale(1.1);
+
+    background: #b02a37;
+}
+
+.end-call-button i {
+    display: block;
+
+    margin-bottom: 3px;
+}
+
+
+/* =========================================
+   Animations
+========================================= */
+
+@keyframes pulse {
+
+    0% {
+        box-shadow:
+            0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+
+    70% {
+        box-shadow:
+            0 0 0 30px rgba(220, 53, 69, 0);
+    }
+
+    100% {
+        box-shadow:
+            0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+@keyframes callerPulse {
+
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+
+/* =========================================
+   Mobile
+========================================= */
+
+@media (max-width: 576px) {
+
+    .setup-card {
+        padding: 28px 22px;
+    }
+
+    .setup-icon {
+        width: 70px;
+        height: 70px;
+
+        font-size: 30px;
+    }
+
+    .incoming-content,
+    .active-content {
+        padding: 25px;
+    }
+
+    .caller-avatar,
+    .active-avatar {
+        width: 105px;
+        height: 105px;
+
+        font-size: 50px;
+    }
+
+    .incoming-content h1,
+    .active-content h1 {
+        font-size: 32px;
+    }
+
+    .call-actions {
+        gap: 55px;
+    }
+
+    .call-button {
+        width: 70px;
+        height: 70px;
+    }
+
+    .countdown-number {
+        font-size: 70px;
+    }
+
+}

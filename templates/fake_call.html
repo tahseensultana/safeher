@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Fake Call | SafeHer</title>
+
+    <!-- Bootstrap -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Bootstrap Icons -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet"
+    >
+
+    <!-- Fake Call CSS -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='fake_call.css') }}"
+    >
+
+</head>
+
+
+<body>
+    <div id="google_translate_element"
+     style="display:none;">
+</div>
+
+<div class="fake-call-page">
+
+
+    <!-- =================================
+         Setup Screen
+    ================================== -->
+
+    <div class="setup-card" id="setupScreen">
+
+        <div class="setup-icon">
+
+            <i class="bi bi-telephone-fill"></i>
+
+        </div>
+
+        <h2>Fake Call</h2>
+
+        <p>
+            Create a realistic incoming call to help
+            you safely leave an uncomfortable situation.
+        </p>
+
+
+        <!-- Caller Name -->
+
+        <div class="mb-3 text-start">
+
+            <label class="form-label">
+                Caller
+            </label>
+
+            <select
+                id="callerName"
+                class="form-select"
+            >
+
+                <option value="Mom">Mom</option>
+
+                <option value="Dad">Dad</option>
+
+                <option value="Best Friend">
+                    Best Friend
+                </option>
+
+                <option value="Sister">
+                    Sister
+                </option>
+
+                <option value="Brother">
+                    Brother
+                </option>
+
+                <option value="Emergency Contact">
+                    Emergency Contact
+                </option>
+
+                <option value="custom">
+                    Custom Caller
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- Custom Caller -->
+
+        <div
+            class="mb-3 text-start"
+            id="customCallerBox"
+            style="display:none;"
+        >
+
+            <label class="form-label">
+                Caller Name
+            </label>
+
+            <input
+                type="text"
+                id="customCaller"
+                class="form-control"
+                placeholder="Enter caller name"
+            >
+
+        </div>
+
+
+        <!-- Delay -->
+
+        <div class="mb-3 text-start">
+
+            <label class="form-label">
+                Call Delay
+            </label>
+
+            <select
+                id="callDelay"
+                class="form-select"
+            >
+
+                <option value="5">
+                    5 seconds
+                </option>
+
+                <option value="10">
+                    10 seconds
+                </option>
+
+                <option value="30">
+                    30 seconds
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- Start -->
+
+        <button
+            id="startFakeCall"
+            class="btn btn-danger w-100"
+        >
+
+            <i class="bi bi-telephone-fill"></i>
+
+            Start Fake Call
+
+        </button>
+
+
+        <!-- Back -->
+
+        <a
+            href="{{ url_for('dashboard') }}"
+            class="btn btn-outline-light w-100 mt-3"
+        >
+
+            <i class="bi bi-arrow-left"></i>
+
+            Back to Dashboard
+
+        </a>
+
+    </div>
+
+
+
+    <!-- =================================
+         Countdown Screen
+    ================================== -->
+
+    <div
+        class="countdown-screen"
+        id="countdownScreen"
+        style="display:none;"
+    >
+
+        <div class="countdown-icon">
+
+            <i class="bi bi-telephone-fill"></i>
+
+        </div>
+
+        <h3>
+            Fake call starting...
+        </h3>
+
+        <div
+            id="countdown"
+            class="countdown-number"
+        >
+            5
+        </div>
+
+        <button
+            id="cancelCall"
+            class="btn btn-outline-light"
+        >
+
+            Cancel
+
+        </button>
+
+    </div>
+
+
+
+    <!-- =================================
+         Incoming Call Screen
+    ================================== -->
+
+    <div
+        class="incoming-call"
+        id="incomingCall"
+        style="display:none;"
+    >
+
+        <div class="incoming-content">
+
+
+            <div class="caller-avatar">
+
+                <i class="bi bi-person-fill"></i>
+
+            </div>
+
+
+            <p class="incoming-label">
+                Incoming Call
+            </p>
+
+
+            <h1 id="incomingCaller">
+               {{ settings.caller_name }}
+            </h1>
+
+
+
+            <div class="call-actions d-flex justify-content-around mt-4">
+
+
+                <!-- Decline -->
+                <div>
+                    <button
+                    id="declineCall"
+                    class="call-button decline"
+                    >
+
+                        <i class="bi bi-telephone-x-fill"></i>
+
+
+                    </button>
+                    <span>
+                    Decline
+                    </span>
+                </div>
+
+
+                <!-- Accept -->
+                <div>
+                    <button
+                    id="acceptCall"
+                    class="call-button accept"
+                    >
+
+                        <i class="bi bi-telephone-fill"></i>
+
+                    </button>
+                    <span>
+                    Accept
+                    </span>
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div
+        class="active-call"
+        id="activeCall"
+        style="display:none;"
+    >
+
+        <div class="active-content">
+
+
+            <div class="active-avatar">
+
+                <i class="bi bi-person-fill"></i>
+
+            </div>
+
+
+            <p>
+                Calling
+            </p>
+
+
+            <h1 id="activeCaller">
+                Mom
+            </h1>
+
+
+            <div
+                id="callTimer"
+                class="call-timer"
+            >
+                00:00
+            </div>
+
+
+            <div class="call-status">
+
+                <i class="bi bi-telephone-fill"></i>
+
+                Connected
+
+            </div>
+
+            <div class="call-actions d-flex justify-content-around mt-4">
+                <button
+                id="endCall"
+                class="end-call-button"
+                >
+
+                    <i class="bi bi-telephone-x-fill"></i>
+
+                
+
+                </button>
+                
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+</div>
+
+
+<!-- Fake Call JS -->
+<script>
+
+const callerName =
+    "{{ settings.caller_name }}";
+
+const ringtone =
+    "{{ settings.fake_call_ringtone }}";
+
+const vibration =
+    {{ settings.fake_call_vibration }};
+
+const delay =
+    {{ settings.fake_call_delay }} * 1000;
+
+
+// ========================================
+// CALLER NAME
+// ========================================
+
+document.getElementById(
+    "incomingCaller"
+).textContent = callerName;
+
+
+// ========================================
+// RINGTONE
+// ========================================
+
+let ringtoneAudio = null;
+
+function playRingtone() {
+
+    if (ringtone === "silent") {
+        return;
+    }
+
+    ringtoneAudio = new Audio(
+        "/static/sounds/" +
+        ringtone +
+        ".mp3"
+    );
+
+    ringtoneAudio.loop = true;
+
+    ringtoneAudio.play().catch(function(error) {
+
+        console.log(
+            "Ringtone blocked by browser:",
+            error
+        );
+
+    });
+
+}
+
+
+function stopRingtone() {
+
+    if (ringtoneAudio) {
+
+        ringtoneAudio.pause();
+
+        ringtoneAudio.currentTime = 0;
+
+        ringtoneAudio = null;
+
+    }
+
+}
+
+
+// ========================================
+// VIBRATION
+// ========================================
+
+function startVibration() {
+
+    if (
+        vibration == 1 &&
+        navigator.vibrate
+    ) {
+
+        navigator.vibrate([
+            500,
+            300,
+            500,
+            300,
+            500
+        ]);
+
+    }
+
+}
+
+
+function stopVibration() {
+
+    if (navigator.vibrate) {
+
+        navigator.vibrate(0);
+
+    }
+
+}
+
+
+// ========================================
+// SHOW FAKE CALL
+// ========================================
+
+function showFakeCall() {
+
+    document.body.classList.add(
+        "fake-call-active"
+    );
+
+    playRingtone();
+
+    startVibration();
+
+}
+
+
+// ========================================
+// ACCEPT CALL
+// ========================================
+
+document.getElementById(
+    "acceptCall"
+).addEventListener(
+    "click",
+    function() {
+
+        stopRingtone();
+
+        stopVibration();
+
+        document.body.classList.remove(
+            "fake-call-active"
+        );
+
+    }
+);
+
+
+// ========================================
+// DECLINE CALL
+// ========================================
+
+document.getElementById(
+    "declineCall"
+).addEventListener(
+    "click",
+    function() {
+
+        stopRingtone();
+
+        stopVibration();
+
+        document.body.classList.remove(
+            "fake-call-active"
+        );
+
+    }
+);
+
+
+// ========================================
+// START AFTER DELAY
+// ========================================
+
+setTimeout(
+    showFakeCall,
+    delay
+);
+
+</script>
+<script
+    src="{{ url_for('static', filename='fake_call.js') }}"
+></script>
+
+<script src="{{ url_for('static', filename='language.js') }}"></script>
+
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+
+</html>

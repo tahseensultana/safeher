@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Nearby Emergency Alerts | SafeHer</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='dashboard.css') }}">
+
+</head>
+
+<body>
+    <div id="google_translate_element"
+     style="display:none;">
+</div>
+
+<div class="container py-5">
+
+    <div class="card shadow-lg p-4">
+
+        <div class="d-flex
+                    justify-content-between
+                    align-items-center
+                    mb-4">
+
+            <h2 class="mb-0">
+
+                <i class="bi bi-bell-fill text-danger"></i>
+
+                Nearby Emergency Alerts
+
+            </h2>
+
+        </div>
+
+
+        <div id="alertsContainer">
+
+            <div class="text-center text-muted">
+
+                <div class="spinner-border"
+                     role="status">
+                </div>
+
+                <p class="mt-2">
+                    Checking for emergency alerts...
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="mt-4">
+
+            <a
+                href="{{ url_for('dashboard') }}"
+                class="btn btn-outline-light">
+
+                <i class="bi bi-arrow-left"></i>
+
+                Dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+async function loadAlerts() {
+
+    try {
+
+        const response = await fetch(
+            "/nearby-emergency-alerts"
+        );
+
+        const result = await response.json();
+
+        console.log(
+            "Nearby alerts:",
+            result
+        );
+
+
+        const container =
+            document.getElementById(
+                "alertsContainer"
+            );
+
+
+        if (!container) {
+
+            console.error(
+                "alertsContainer not found."
+            );
+
+            return;
+        }
+
+
+        if (!result.success) {
+
+            container.innerHTML = `
+                <div class="alert alert-danger">
+                    Unable to load emergency alerts.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        container.innerHTML = "";
+
+
+        // ========================================
+        // NO ALERTS
+        // ========================================
+
+        if (result.alerts.length === 0) {
+
+            container.innerHTML = `
+                <div class="alert alert-secondary">
+
+                    <i class="bi bi-shield-check"></i>
+
+                    No nearby emergency alerts.
+
+                </div>
+            `;
+
+            return;
+        }
+
+
+        // ========================================
+        // DISPLAY ALERTS
+        // ========================================
+
+        result.alerts.forEach(function(alert) {
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "card shadow-sm mb-3";
+
+
+            card.innerHTML = `
+
+                <div class="card-body">
+
+                    <h5 class="text-danger">
+
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+
+                        Emergency Nearby
+
+                    </h5>
+
+
+                    <p class="mb-2">
+
+                        ${alert.message}
+
+                    </p>
+
+
+                    <p class="mb-1">
+
+                        <strong>
+                            👤 ${alert.name}
+                        </strong>
+
+                    </p>
+
+
+                    <p class="mb-2">
+
+                        📞 ${alert.phone}
+
+                    </p>
+
+
+                    <small class="text-muted">
+
+                        ${alert.created_at}
+
+                    </small>
+
+
+                    <div class="mt-3">
+
+                        <a
+                            href="https://www.openstreetmap.org/?mlat=${alert.latitude}&mlon=${alert.longitude}"
+                            target="_blank"
+                            class="btn btn-dark btn-sm">
+
+                            <i class="bi bi-geo-alt-fill"></i>
+
+                            View Location
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            container.appendChild(card);
+
+        });
+
+
+        // ========================================
+        // MARK AS READ
+        // ========================================
+
+        await markAlertsAsRead();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Load alerts error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ========================================
+// MARK ALL ALERTS AS READ
+// ========================================
+
+async function markAlertsAsRead() {
+
+    try {
+
+        console.log(
+            "📖 Marking nearby alerts as read..."
+        );
+
+
+        const response = await fetch(
+            "/mark-nearby-alerts-read",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+        );
+
+
+        console.log(
+            "Mark-read HTTP status:",
+            response.status
+        );
+
+
+        const result =
+            await response.json();
+
+
+        console.log(
+            "Mark-read response:",
+            result
+        );
+
+
+        if (result.success) {
+
+            console.log(
+                "✅ Alerts marked as read:",
+                result.updated
+            );
+
+        }
+
+        else {
+
+            console.error(
+                "❌ Could not mark alerts as read:",
+                result.message
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "❌ Mark-read request failed:",
+            error
+        );
+
+    }
+
+}
+
+
+// ========================================
+// PAGE LOAD
+// ========================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadAlerts();
+
+    }
+);
+
+</script>
+<script src="{{ url_for('static', filename='language.js') }}"></script>
+
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+
+</html>

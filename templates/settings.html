@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Settings | SafeHer</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='settings.css') }}">
+</head>
+
+<body>
+    <div id="google_translate_element"
+     style="display:none;">
+</div>
+
+<div class="settings-container">
+
+    <!-- Header -->
+
+    <div class="settings-header">
+
+        <a href="{{ url_for('dashboard') }}" class="back-btn">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+
+        <div>
+            <h1>
+                <i class="bi bi-gear-fill"></i>
+                User Settings
+            </h1>
+
+            <p>
+                Customize your SafeHer experience and safety preferences.
+            </p>
+        </div>
+
+    </div>
+
+
+    <form method="POST"
+          action="{{ url_for('settings') }}">
+
+
+        <!-- =====================================
+             NOTIFICATIONS
+        ====================================== -->
+
+        <div class="settings-card">
+
+            <div class="section-title">
+
+                <div class="section-icon">
+                    <i class="bi bi-bell-fill"></i>
+                </div>
+
+                <div>
+                    <h3>Notifications</h3>
+                    <p>Control how SafeHer keeps you informed.</p>
+                </div>
+
+            </div>
+
+
+            <!-- Emergency Alerts -->
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        🚨 Emergency Alerts
+                    </strong>
+
+                    <span>
+                        Receive important SOS/emergency notifications.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="emergency_alerts"
+                    class="form-check-input setting-switch"
+                    {% if settings.emergency_alerts %}checked{% endif %}>
+
+            </div>
+
+
+            <!-- Danger Zone -->
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        ⚠️ Danger Zone Alerts
+                    </strong>
+
+                    <span>
+                        Alert when entering or approaching a reported danger area.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="danger_zone_alerts"
+                    class="form-check-input setting-switch"
+                    {% if settings.danger_zone_alerts %}checked{% endif %}>
+
+            </div>
+
+
+            <!-- Nearby Users -->
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        👥 Nearby User Alerts
+                    </strong>
+
+                    <span>
+                        Receive emergency alerts from SafeHer users nearby.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="nearby_user_alerts"
+                    class="form-check-input setting-switch"
+                    {% if settings.nearby_user_alerts %}checked{% endif %}>
+
+            </div>
+
+
+            <!-- Incident Reports -->
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        📋 Incident Report Updates
+                    </strong>
+
+                    <span>
+                        Notify when your submitted report changes status.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="incident_report_updates"
+                    class="form-check-input setting-switch"
+                    {% if settings.incident_report_updates %}checked{% endif %}>
+
+            </div>
+
+
+            <!-- Location Sharing Alerts -->
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        📍 Location Sharing Alerts
+                    </strong>
+
+                    <span>
+                        Notify about live-location sharing events.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="location_sharing_alerts"
+                    class="form-check-input setting-switch"
+                    {% if settings.location_sharing_alerts %}checked{% endif %}>
+
+            </div>
+
+
+            <!-- Sound -->
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        🔊 Sound
+                    </strong>
+
+                    <span>
+                        Enable notification sounds.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="sound"
+                    class="form-check-input setting-switch"
+                    {% if settings.sound %}checked{% endif %}>
+
+            </div>
+
+
+            <!-- Vibration -->
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>
+                        📳 Vibration
+                    </strong>
+
+                    <span>
+                        Enable vibration for notifications.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="vibration"
+                    class="form-check-input setting-switch"
+                    {% if settings.vibration %}checked{% endif %}>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             LOCATION & SAFETY
+        ====================================== -->
+
+        <div class="settings-card">
+
+            <div class="section-title">
+
+                <div class="section-icon">
+                    <i class="bi bi-geo-alt-fill"></i>
+                </div>
+
+                <div>
+                    <h3>Location & Safety</h3>
+                    <p>Manage your location and safety features.</p>
+                </div>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>📍 Location Sharing</strong>
+
+                    <span>
+                        Allow SafeHer to share your location when required.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="location_sharing"
+                    class="form-check-input setting-switch"
+                    {% if settings.location_sharing %}checked{% endif %}>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>⚠️ Danger Zone Detection</strong>
+
+                    <span>
+                        Detect reported danger areas around you.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="danger_zone_detection"
+                    class="form-check-input setting-switch"
+                    {% if settings.danger_zone_detection %}checked{% endif %}>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>📡 Live Location Updates</strong>
+
+                    <span>
+                        Continuously update your location when enabled.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="live_location_updates"
+                    class="form-check-input setting-switch"
+                    {% if settings.live_location_updates %}checked{% endif %}>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>🆘 Save Location During SOS</strong>
+
+                    <span>
+                        Save your current location when an SOS is triggered.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="save_location_sos"
+                    class="form-check-input setting-switch"
+                    {% if settings.save_location_sos %}checked{% endif %}>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             FAKE CALL
+        ====================================== -->
+
+        <div class="settings-card">
+
+            <div class="section-title">
+
+                <div class="section-icon">
+                    <i class="bi bi-telephone-fill"></i>
+                </div>
+
+                <div>
+                    <h3>Fake Call</h3>
+                    <p>Customize your SafeHer fake call.</p>
+                </div>
+
+            </div>
+
+
+            <!-- Ringtone -->
+
+            <div class="form-setting">
+
+                <label>
+                    🎵 Fake Call Ringtone
+                </label>
+
+                <select
+                    name="fake_call_ringtone"
+                    class="form-select">
+
+                    <option value="classic"
+                        {% if settings.fake_call_ringtone == 'classic' %}
+                        selected
+                        {% endif %}>
+                        Classic
+                    </option>
+
+                    <option value="phone_ring"
+                        {% if settings.fake_call_ringtone == 'phone_ring' %}
+                        selected
+                        {% endif %}>
+                        Phone Ring
+                    </option>
+
+                    <option value="emergency_ring"
+                        {% if settings.fake_call_ringtone == 'emergency_ring' %}
+                        selected
+                        {% endif %}>
+                        Emergency Ring
+                    </option>
+
+                    <option value="silent"
+                        {% if settings.fake_call_ringtone == 'silent' %}
+                        selected
+                        {% endif %}>
+                        Silent
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Fake Call Vibration -->
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>📳 Vibration</strong>
+
+                    <span>
+                        Vibrate during the fake incoming call.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="fake_call_vibration"
+                    class="form-check-input setting-switch"
+                    {% if settings.fake_call_vibration %}checked{% endif %}>
+
+            </div>
+
+
+            <!-- Delay -->
+
+            <div class="form-setting">
+
+                <label>
+                    ⏱ Fake Call Delay
+                </label>
+
+                <select
+                    name="fake_call_delay"
+                    class="form-select">
+
+                    <option value="5"
+                        {% if settings.fake_call_delay == 5 %}
+                        selected
+                        {% endif %}>
+                        5 seconds
+                    </option>
+
+                    <option value="10"
+                        {% if settings.fake_call_delay == 10 %}
+                        selected
+                        {% endif %}>
+                        10 seconds
+                    </option>
+
+                    <option value="30"
+                        {% if settings.fake_call_delay == 30 %}
+                        selected
+                        {% endif %}>
+                        30 seconds
+                    </option>
+
+                    <option value="60"
+                        {% if settings.fake_call_delay == 60 %}
+                        selected
+                        {% endif %}>
+                        1 minute
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- Caller Name -->
+
+            <div class="form-setting">
+
+                <label>
+                    👤 Caller Name
+                </label>
+
+                <input
+                    type="text"
+                    name="caller_name"
+                    class="form-control"
+                    value="{{ settings.caller_name }}"
+                    placeholder="Example: Mom">
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             PRIVACY
+        ====================================== -->
+
+        <div class="settings-card">
+
+            <div class="section-title">
+
+                <div class="section-icon">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+
+                <div>
+                    <h3>Privacy</h3>
+                    <p>Control your privacy and location visibility.</p>
+                </div>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>🕵️ Anonymous Incident Reports</strong>
+
+                    <span>
+                        Submit incident reports without displaying your identity.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="anonymous_reports"
+                    class="form-check-input setting-switch"
+                    {% if settings.anonymous_reports %}checked{% endif %}>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>📍 Show My Location to Others</strong>
+
+                    <span>
+                        Allow your location to be visible to permitted users.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="show_location_to_others"
+                    class="form-check-input setting-switch"
+                    {% if settings.show_location_to_others %}checked{% endif %}>
+
+            </div>
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>👤 Share My Name with Others</strong>
+
+                    <span>
+                        Allow nearby SafeHer users to see your name when you send an emergency alert.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="share_name_emergency"
+                    class="form-check-input setting-switch"
+                    {% if settings.share_name_emergency %}checked{% endif %}>
+
+            </div>
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>📞 Share My Phone Number with Others</strong>
+
+                    <span>
+                    Allow nearby SafeHer users to see your phone number when you send an emergency alert.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="share_phone_emergency"
+                    class="form-check-input setting-switch"
+                    {% if settings.share_phone_emergency %}checked{% endif %}>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>🗂 Location History</strong>
+
+                    <span>
+                        View or manage your saved location history.
+                    </span>
+
+                </div>
+
+                <a href="{{ url_for('history') }}"
+                   class="btn btn-sm btn-outline-light">
+                    View History
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================
+             APP PREFERENCES
+        ====================================== -->
+
+        <div class="settings-card">
+
+            <div class="section-title">
+
+                <div class="section-icon">
+                    <i class="bi bi-palette-fill"></i>
+                </div>
+
+                <div>
+                    <h3>App Preferences</h3>
+                    <p>Customize how SafeHer looks and behaves.</p>
+                </div>
+
+            </div>
+
+
+            <div class="form-setting">
+
+                <label>
+                    🌐 Language
+                </label>
+
+                <select
+                    name="language"
+                    class="form-select">
+
+                    <option value="English"
+                        {% if settings.language == 'English' %}
+                        selected
+                        {% endif %}>
+                        English
+                    </option>
+
+                    <option value="বাংলা"
+                        {% if settings.language == 'বাংলা' %}
+                        selected
+                        {% endif %}>
+                        বাংলা
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="setting-row">
+
+                <div class="setting-info">
+
+                    <strong>🔊 Sound Effects</strong>
+
+                    <span>
+                        Enable SafeHer interface sound effects.
+                    </span>
+
+                </div>
+
+                <input
+                    type="checkbox"
+                    name="sound_effects"
+                    class="form-check-input setting-switch"
+                    {% if settings.sound_effects %}checked{% endif %}>
+
+            </div>
+
+        </div>
+
+
+        <!-- Save -->
+
+        <div class="save-section">
+
+            <button type="submit"
+                    class="btn btn-danger save-btn">
+
+                <i class="bi bi-check-circle-fill"></i>
+
+                Save Settings
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+<script src="{{ url_for('static', filename='language.js') }}"></script>
+
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

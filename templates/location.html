@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Live Location</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='location.css') }}">
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</head>
+
+<body>
+    <div id="google_translate_element"
+     style="display:none;">
+</div>
+
+    <div class="container py-5">
+
+        <div class="card shadow-lg p-4">
+
+            <h2 class="text-center mb-4">
+
+            📍 Live Location
+
+            </h2>
+
+            {% if saved_location %}
+
+<div class="alert alert-info text-center">
+
+    <h5>{{ saved_location[2] }} Location</h5>
+
+    <p>
+        Saved on {{ saved_location[3] }}
+    </p>
+
+</div>
+
+{% endif %}
+
+            <div id="map"></div>
+
+            <div class="row text-center mt-4">
+
+                <div class="col-md-4">
+
+        <h5>Latitude</h5>
+
+        <p id="latitude">--</p>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <h5>Longitude</h5>
+
+        <p id="longitude">--</p>
+
+    </div>
+
+    <div class="col-md-4">
+
+        <h5>Accuracy</h5>
+
+        <p id="accuracy">--</p>
+
+    </div>
+
+</div>
+
+<div class="text-center mt-4">
+
+<button
+class="btn btn-danger btn-lg"
+onclick="getLocation()">
+
+Get My Location
+
+</button>
+
+</div>
+
+<div class="text-center mt-3">
+
+    <button
+    class="btn btn-success btn-lg"
+    data-bs-toggle="modal"
+    data-bs-target="#shareModal">
+
+        📍 Share Live Location
+
+    </button>
+
+</div>
+
+<div class="text-center mt-3">
+
+    <button
+        class="btn btn-primary btn-lg"
+        onclick="saveLocation()">
+
+        💾 Save Current Location
+
+    </button>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+const savedLocation = {
+    latitude: {{ saved_location[0] if saved_location else 'null' }},
+    longitude: {{ saved_location[1] if saved_location else 'null' }},
+    eventType: "{{ saved_location[2] if saved_location else '' }}",
+    createdAt: "{{ saved_location[3] if saved_location else '' }}"
+};
+</script>
+
+<script src="{{ url_for('static', filename='location.js') }}"></script>
+
+
+<!-- Share Live Location Modal -->
+
+<div class="modal fade" id="shareModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Share Live Location</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <p>Select emergency contacts:</p>
+
+                    <div id="contactList" class="mb-3">
+<!-- Loaded from Flask -->
+                        {% for c in contacts %}
+                            <div class="form-check">
+                                <input
+                                class="form-check-input contact-check"
+                                type="checkbox"
+                                value="{{ c[2] }}"
+                                data-email="{{ c[3] }}"
+                                id="c{{ c[0] }}">
+                                <label class="form-check-label" for="c{{ c[0] }}">
+        {{ c[1] }} ({{ c[2] }})
+    </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+<div class="d-grid gap-2">
+
+    <button class="btn btn-success"
+        onclick="shareViaWhatsApp()">
+
+        💬 Share via WhatsApp
+
+    </button>
+
+    <button class="btn btn-primary"
+        onclick="shareViaEmail()">
+
+        📧 Share via Email
+
+    </button>
+
+    <button class="btn btn-warning"
+        onclick="shareViaSMS()">
+
+        📱 Share via SMS
+
+    </button>
+
+    <button class="btn btn-secondary"
+        onclick="copyLocation()">
+
+        📋 Copy Location Link
+
+    </button>
+
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+<script>
+function buildLocationMessage(){
+ if(currentLatitude===null||currentLongitude===null){
+   alert("Location not available.");
+   return null;
+ }
+ const link=`https://www.openstreetmap.org/?mlat=${currentLatitude}&mlon=${currentLongitude}#map=17/${currentLatitude}/${currentLongitude}`;
+ return `🚨 SafeHer Emergency Alert\n\nI am sharing my live location:\n${link}`;
+}
+
+function shareViaWhatsApp(){
+ const msg=buildLocationMessage();
+ if(!msg) return;
+ const checks=document.querySelectorAll(".contact-check:checked");
+ if(checks.length===0){alert("Select at least one contact.");return;}
+ checks.forEach(c=>{
+   const phone=c.value.replace(/\D/g,"");
+   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`,"_blank");
+ });
+}
+
+function copyLocation(){
+ const msg=buildLocationMessage();
+ if(!msg) return;
+ navigator.clipboard.writeText(msg).then(()=>alert("Location copied."));
+}
+</script>
+<script src="{{ url_for('static', filename='language.js') }}"></script>
+
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+
+</html>

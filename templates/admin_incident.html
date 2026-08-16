@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
+
+<title>Incident Report | SafeHer</title>
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+rel="stylesheet">
+
+<link
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+rel="stylesheet">
+
+<link
+rel="stylesheet"
+href="{{ url_for('static', filename='admin.css') }}">
+
+</head>
+
+
+<body>
+
+<div class="main-content">
+
+    <div class="dashboard-section">
+
+        <div class="section-header">
+
+            <h4>
+
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                Incident Report
+
+            </h4>
+
+            <p>
+                Detailed information about the reported incident
+            </p>
+
+        </div>
+
+
+        <!-- Reporter -->
+
+        <div class="incident-detail">
+
+            <h5>
+                <i class="bi bi-person-fill"></i>
+                Reporter
+            </h5>
+
+            <div class="detail-row">
+
+                <span>Name</span>
+
+                <strong>
+                    {{ incident.fullname }}
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>Email</span>
+
+                <strong>
+                    {{ incident.email }}
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>Phone</span>
+
+                <strong>
+                    {{ incident.phone }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- Incident -->
+
+        <div class="incident-detail">
+
+            <h5>
+
+                <i class="bi bi-file-earmark-text-fill"></i>
+
+                Incident Information
+
+            </h5>
+
+
+            <div class="detail-row">
+
+                <span>Type</span>
+
+                <strong>
+                    {{ incident.incident_type }}
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>Severity</span>
+
+                <strong>
+                    {{ incident.severity }}
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+    <span>Status</span>
+
+    <form
+        method="POST"
+        action="{{ url_for(
+            'admin_update_incident_status',
+            id=incident.id
+        ) }}"
+        class="status-form"
+    >
+
+        <select
+            name="status"
+            class="form-select status-select"
+        >
+
+            <option
+                value="Pending"
+                {% if incident.status == "Pending" %}selected{% endif %}
+            >
+                Pending
+            </option>
+
+            <option
+                value="Reviewing"
+                {% if incident.status == "Reviewing" %}selected{% endif %}
+            >
+                Reviewing
+            </option>
+
+            <option
+                value="Resolved"
+                {% if incident.status == "Resolved" %}selected{% endif %}
+            >
+                Resolved
+            </option>
+
+            <option
+                value="Rejected"
+                {% if incident.status == "Rejected" %}selected{% endif %}
+            >
+                Rejected
+            </option>
+
+        </select>
+
+        <button
+            type="submit"
+            class="btn btn-danger btn-sm"
+        >
+
+            <i class="bi bi-check-lg"></i>
+
+            Update
+
+        </button>
+
+    </form>
+
+</div>
+
+            <div class="detail-row">
+
+                <span>Date</span>
+
+                <strong>
+                    {{ incident.created_at }}
+                </strong>
+
+            </div>
+
+
+            <div class="description-box">
+
+                <strong>Description</strong>
+
+                <p>
+                    {{ incident.description }}
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- Location -->
+
+        <div class="incident-detail">
+
+            <h5>
+
+                <i class="bi bi-geo-alt-fill"></i>
+
+                Reported Location
+
+            </h5>
+
+
+            <div class="detail-row">
+
+                <span>Latitude</span>
+
+                <strong>
+                    {{ incident.latitude }}
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>Longitude</span>
+
+                <strong>
+                    {{ incident.longitude }}
+                </strong>
+
+            </div>
+
+
+            {% if incident.latitude and incident.longitude %}
+
+            <a
+                href="https://www.openstreetmap.org/?mlat={{ incident.latitude }}&mlon={{ incident.longitude }}#map=17/{{ incident.latitude }}/{{ incident.longitude }}"
+                target="_blank"
+                class="btn btn-danger mt-3"
+            >
+
+                <i class="bi bi-map-fill"></i>
+
+                View Location
+
+            </a>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- Evidence -->
+
+        {% if incident.image %}
+
+        <div class="incident-detail">
+
+            <h5>
+
+                <i class="bi bi-image-fill"></i>
+
+                Evidence
+
+            </h5>
+
+            <img
+                src="{{ url_for('static', filename='uploads/' + incident.image) }}"
+                class="incident-image"
+            >
+
+        </div>
+
+        {% endif %}
+
+
+        <div class="mt-4">
+
+            <a
+                href="{{ url_for('admin_dashboard') }}"
+                class="btn btn-outline-light"
+            >
+
+                <i class="bi bi-arrow-left"></i>
+
+                Back to Dashboard
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
