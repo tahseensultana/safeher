@@ -1888,7 +1888,44 @@ def fake_call():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    return render_template("fake_call.html")
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            fake_call_ringtone,
+            fake_call_vibration,
+            fake_call_delay,
+            caller_name
+        FROM user_settings
+        WHERE user_id = ?
+    """, (session["user_id"],))
+
+    row = cursor.fetchone()
+
+    conn.close()
+
+    # Default settings if no settings exist
+    if not row:
+        settings = {
+            "caller_name": "Mom",
+            "fake_call_ringtone": "notification",
+            "fake_call_vibration": 1,
+            "fake_call_delay": 5
+        }
+    else:
+        settings = {
+            "caller_name": row["caller_name"] or "Mom",
+            "fake_call_ringtone": row["fake_call_ringtone"] or "notification",
+            "fake_call_vibration": row["fake_call_vibration"] or 1,
+            "fake_call_delay": row["fake_call_delay"] or 5
+        }
+
+    return render_template(
+        "fake_call.html",
+        settings=settings
+    )
 
 @app.route("/get-fake-call-settings")
 def get_fake_call_settings():
