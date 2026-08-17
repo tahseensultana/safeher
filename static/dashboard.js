@@ -964,6 +964,10 @@ setInterval(
 // SAFEHER NOTIFICATION SYSTEM
 // ========================================
 
+// ========================================
+// SAFEHER NOTIFICATION SYSTEM
+// ========================================
+
 function showNotification(message, type = "danger") {
 
     console.log("🔔 Notification:", message);
@@ -1003,29 +1007,17 @@ function showNotification(message, type = "danger") {
 
 
     // ----------------------------------------
-    // Sound
+    // Notification Sound
     // ----------------------------------------
-    checkNotificationSetting(
-    "nearby_user_alerts",
-        function(enabled) {
 
-            if (enabled) {
-
-                showNotification(
-                "🚨 Emergency reported nearby!",
-                "danger"
-                );
-
-            }
-
-        }
-    );
     checkNotificationSetting(
         "sound",
         function(enabled) {
 
             if (enabled) {
+
                 playNotificationSound();
+
             }
 
         }
@@ -1045,9 +1037,11 @@ function showNotification(message, type = "danger") {
                 navigator.vibrate
             ) {
 
-                navigator.vibrate(
-                    [200, 100, 200]
-                );
+                navigator.vibrate([
+                    200,
+                    100,
+                    200
+                ]);
 
             }
 
@@ -1059,23 +1053,20 @@ function showNotification(message, type = "danger") {
     // Automatically remove
     // ----------------------------------------
 
-    setTimeout(
-        function() {
+    setTimeout(function() {
 
-            if (
-                notification &&
-                notification.parentElement
-            ) {
+        if (
+            notification &&
+            notification.parentElement
+        ) {
 
-                notification.remove();
+            notification.remove();
 
-            }
+        }
 
-        },
-        5000
-    );
+    }, 5000);
+
 }
-
 function notifyLocationSharing(message) {
 
     checkNotificationSetting(
@@ -1545,60 +1536,33 @@ function showFakeCall() {
 
 function playFakeCallSound() {
 
+    if (!fakeCallSettings) {
+        return;
+    }
+
     const ringtone =
         fakeCallSettings.ringtone;
-
 
     if (ringtone === "silent") {
         return;
     }
 
-
-    let soundFile =
-        "/static/sounds/classic.mp3";
-
-
-    if (
-        ringtone === "phone_ring"
-    ) {
-
-        soundFile =
-            "/static/sounds/phone_ring.mp3";
-
-    }
-
-
-    if (
-        ringtone === "emergency_ring"
-    ) {
-
-        soundFile =
-            "/static/sounds/emergency_ring.mp3";
-
-    }
-
-
     const audio =
-        new Audio(soundFile);
-
+        new Audio("/static/sounds/ringtone.mp3");
 
     audio.loop = true;
 
-    audio.play()
-        .catch(function(error) {
+    audio.play().catch(function(error) {
 
-            console.log(
-                "Audio playback blocked:",
-                error
-            );
+        console.log(
+            "Fake call audio blocked:",
+            error
+        );
 
-        });
+    });
 
-
-    window.fakeCallAudio =
-        audio;
+    window.fakeCallAudio = audio;
 }
-
 
 // ========================================
 // ANSWER
