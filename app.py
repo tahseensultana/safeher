@@ -994,8 +994,14 @@ def check_danger_zones():
             "message": "Please login first."
         }), 401
 
+
+    # ========================================
+    # GET USER LOCATION
+    # ========================================
+
     latitude = request.args.get("latitude")
     longitude = request.args.get("longitude")
+
 
     if latitude is None or longitude is None:
         return jsonify({
@@ -1003,14 +1009,19 @@ def check_danger_zones():
             "message": "Location required."
         }), 400
 
+
     try:
+
         latitude = float(latitude)
         longitude = float(longitude)
+
     except (TypeError, ValueError):
+
         return jsonify({
             "success": False,
             "message": "Invalid location."
         }), 400
+
 
     # ========================================
     # CHECK USER SETTINGS
@@ -1020,6 +1031,7 @@ def check_danger_zones():
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
+
     cursor.execute("""
         SELECT
             danger_zone_detection,
@@ -1028,9 +1040,12 @@ def check_danger_zones():
         WHERE user_id = ?
     """, (session["user_id"],))
 
+
     settings = cursor.fetchone()
 
-    # Default: enabled
+
+    # Default settings
+
     if settings:
 
         detection_enabled = settings["danger_zone_detection"]
@@ -1042,7 +1057,10 @@ def check_danger_zones():
         alerts_enabled = 1
 
 
-    # If detection is disabled
+    # ========================================
+    # DETECTION DISABLED
+    # ========================================
+
     if detection_enabled != 1:
 
         conn.close()
@@ -1056,7 +1074,7 @@ def check_danger_zones():
 
 
     # ========================================
-    # GET REPORTED INCIDENTS
+    # GET INCIDENT REPORTS
     # ========================================
 
     cursor.execute("""
@@ -1071,9 +1089,12 @@ def check_danger_zones():
         FROM incident_reports
         WHERE latitude IS NOT NULL
         AND longitude IS NOT NULL
+        AND TRIM(latitude) != ''
+        AND TRIM(longitude) != ''
         AND status != 'Rejected'
         ORDER BY created_at DESC
     """)
+
 
     incidents = cursor.fetchall()
 
@@ -1088,16 +1109,39 @@ def check_danger_zones():
 
     DANGER_RADIUS = 1.0   # 1 kilometer
 
+
     for incident in incidents:
 
-        incident_latitude = float(
-            incident["latitude"]
-        )
+        # ------------------------------------
+        # Validate incident coordinates
+        # ------------------------------------
 
-        incident_longitude = float(
-            incident["longitude"]
-        )
+        try:
 
+            incident_latitude = float(
+                incident["latitude"]
+            )
+
+            incident_longitude = float(
+                incident["longitude"]
+            )
+
+        except (TypeError, ValueError):
+
+            print(
+                f"⚠️ Skipping incident "
+                f"{incident['id']} "
+                f"because coordinates are invalid: "
+                f"{incident['latitude']}, "
+                f"{incident['longitude']}"
+            )
+
+            continue
+
+
+        # ------------------------------------
+        # Calculate distance
+        # ------------------------------------
 
         distance = calculate_distance(
             latitude,
@@ -1107,11 +1151,16 @@ def check_danger_zones():
         )
 
 
+        # ------------------------------------
+        # Check danger radius
+        # ------------------------------------
+
         if distance <= DANGER_RADIUS:
 
             nearby_zones.append({
 
-                "id": incident["id"],
+                "id":
+                    incident["id"],
 
                 "incident_type":
                     incident["incident_type"],
@@ -1136,6 +1185,10 @@ def check_danger_zones():
 
             })
 
+
+    # ========================================
+    # RESPONSE
+    # ========================================
 
     return jsonify({
 
