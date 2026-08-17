@@ -32,153 +32,153 @@
 <body>
     <div id="google_translate_element"
      style="display:none;">
-</div>
+    </div>
 
-<div class="fake-call-page">
+    <div class="fake-call-page">
 
 
     <!-- =================================
          Setup Screen
     ================================== -->
 
-    <div class="setup-card" id="setupScreen">
+        <div class="setup-card" id="setupScreen">
 
-        <div class="setup-icon">
+            <div class="setup-icon">
 
-            <i class="bi bi-telephone-fill"></i>
+                <i class="bi bi-telephone-fill"></i>
 
-        </div>
+            </div>
 
-        <h2>Fake Call</h2>
+            <h2>Fake Call</h2>
 
-        <p>
+            <p>
             Create a realistic incoming call to help
             you safely leave an uncomfortable situation.
-        </p>
+            </p>
 
 
         <!-- Caller Name -->
 
-        <div class="mb-3 text-start">
+            <div class="mb-3 text-start">
 
-            <label class="form-label">
+                <label class="form-label">
                 Caller
-            </label>
+                </label>
 
-            <select
+                <select
                 id="callerName"
                 class="form-select"
-            >
+                >
 
-                <option value="Mom">Mom</option>
+                    <option value="Mom">Mom</option>
 
-                <option value="Dad">Dad</option>
+                    <option value="Dad">Dad</option>
 
-                <option value="Best Friend">
+                    <option value="Best Friend">
                     Best Friend
-                </option>
+                    </option>
 
-                <option value="Sister">
+                    <option value="Sister">
                     Sister
-                </option>
+                    </option>
 
-                <option value="Brother">
+                    <option value="Brother">
                     Brother
-                </option>
+                    </option>
 
-                <option value="Emergency Contact">
+                    <option value="Emergency Contact">
                     Emergency Contact
-                </option>
+                    </option>
 
-                <option value="custom">
+                    <option value="custom">
                     Custom Caller
-                </option>
+                    </option>
 
-            </select>
+                </select>
 
-        </div>
+            </div>
 
 
         <!-- Custom Caller -->
 
-        <div
+            <div
             class="mb-3 text-start"
             id="customCallerBox"
             style="display:none;"
-        >
+            >
 
-            <label class="form-label">
+                <label class="form-label">
                 Caller Name
-            </label>
+                </label>
 
-            <input
+                <input
                 type="text"
                 id="customCaller"
                 class="form-control"
                 placeholder="Enter caller name"
-            >
+                >
 
-        </div>
+            </div>
 
 
         <!-- Delay -->
 
-        <div class="mb-3 text-start">
+            <div class="mb-3 text-start">
 
-            <label class="form-label">
+                <label class="form-label">
                 Call Delay
-            </label>
+                </label>
 
-            <select
+                <select
                 id="callDelay"
                 class="form-select"
-            >
+                >
 
-                <option value="5">
+                    <option value="5">
                     5 seconds
-                </option>
+                    </option>
 
-                <option value="10">
+                    <option value="10">
                     10 seconds
-                </option>
+                    </option>
 
-                <option value="30">
+                    <option value="30">
                     30 seconds
-                </option>
+                    </option>
 
-            </select>
+                </select>
 
-        </div>
+            </div>
 
 
         <!-- Start -->
 
-        <button
+            <button
             id="startFakeCall"
             class="btn btn-danger w-100"
-        >
+            >
 
-            <i class="bi bi-telephone-fill"></i>
+                <i class="bi bi-telephone-fill"></i>
 
             Start Fake Call
 
-        </button>
+            </button>
 
 
         <!-- Back -->
 
-        <a
+            <a
             href="{{ url_for('dashboard') }}"
             class="btn btn-outline-light w-100 mt-3"
-        >
+            >
 
-            <i class="bi bi-arrow-left"></i>
+                <i class="bi bi-arrow-left"></i>
 
             Back to Dashboard
 
-        </a>
+            </a>
 
-    </div>
+        </div>
 
 
 
@@ -186,39 +186,39 @@
          Countdown Screen
     ================================== -->
 
-    <div
+        <div
         class="countdown-screen"
         id="countdownScreen"
         style="display:none;"
-    >
+        >
 
-        <div class="countdown-icon">
+            <div class="countdown-icon">
 
-            <i class="bi bi-telephone-fill"></i>
+                <i class="bi bi-telephone-fill"></i>
 
-        </div>
+            </div>
 
-        <h3>
+            <h3>
             Fake call starting...
-        </h3>
+            </h3>
 
-        <div
+            <div
             id="countdown"
             class="countdown-number"
-        >
-            5
-        </div>
+            >
+                5
+            </div>
 
-        <button
+            <button
             id="cancelCall"
             class="btn btn-outline-light"
-        >
+            >
 
             Cancel
 
-        </button>
+            </button>
 
-    </div>
+        </div>
 
 
 
@@ -226,66 +226,131 @@
          Incoming Call Screen
     ================================== -->
 
-    <div
+        <div
         class="incoming-call"
         id="incomingCall"
         style="display:none;"
-    >
+        >
 
-        <div class="incoming-content">
-
-
-            <div class="caller-avatar">
-
-                <i class="bi bi-person-fill"></i>
-
-            </div>
+            <div class="incoming-content">
 
 
-            <p class="incoming-label">
+                <div class="caller-avatar">
+
+                    <i class="bi bi-person-fill"></i>
+
+                </div>
+
+
+                <p class="incoming-label">
                 Incoming Call
-            </p>
+                </p>
 
 
-            <h1 id="incomingCaller">
+                <h1 id="incomingCaller">
                {{ settings.caller_name }}
-            </h1>
+                </h1>
 
 
 
-            <div class="call-actions d-flex justify-content-around mt-4">
+                <div class="call-actions d-flex justify-content-around mt-4">
 
 
                 <!-- Decline -->
-                <div>
-                    <button
+                    <div>
+                        <button
                     id="declineCall"
                     class="call-button decline"
+                        >
+
+                            <i class="bi bi-telephone-x-fill"></i>
+
+
+                        </button>
+                        <span>
+                        Decline
+                        </span>
+                    </div>
+
+
+                <!-- Accept -->
+                    <div>
+                        <button
+                        id="acceptCall"
+                        class="call-button accept"
+                        >
+
+                            <i class="bi bi-telephone-fill"></i>
+
+                        </button>
+                        <span>
+                        Accept
+                        </span>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div
+        class="active-call"
+        id="activeCall"
+        style="display:none;"
+        >
+
+            <div class="active-content">
+
+
+                <div class="active-avatar">
+
+                    <i class="bi bi-person-fill"></i>
+
+                </div>
+
+
+                <p>
+                Calling
+                </p>
+
+
+                <h1 id="activeCaller">
+                    Mom
+                </h1>
+
+
+                <div
+                id="callTimer"
+                class="call-timer"
+                >
+                    00:00
+                </div>
+
+
+                <div class="call-status">
+
+                    <i class="bi bi-telephone-fill"></i>
+
+                Connected
+
+                </div>
+
+                <div class="call-actions d-flex justify-content-around mt-4">
+                    <button
+                    id="endCall"
+                    class="end-call-button"
                     >
 
                         <i class="bi bi-telephone-x-fill"></i>
 
+                
 
                     </button>
-                    <span>
-                    Decline
-                    </span>
-                </div>
-
-
-                <!-- Accept -->
-                <div>
-                    <button
-                    id="acceptCall"
-                    class="call-button accept"
-                    >
-
-                        <i class="bi bi-telephone-fill"></i>
-
-                    </button>
-                    <span>
-                    Accept
-                    </span>
+                
                 </div>
 
 
@@ -293,74 +358,9 @@
 
         </div>
 
-    </div>
 
-
-
-    <div
-        class="active-call"
-        id="activeCall"
-        style="display:none;"
-    >
-
-        <div class="active-content">
-
-
-            <div class="active-avatar">
-
-                <i class="bi bi-person-fill"></i>
-
-            </div>
-
-
-            <p>
-                Calling
-            </p>
-
-
-            <h1 id="activeCaller">
-                Mom
-            </h1>
-
-
-            <div
-                id="callTimer"
-                class="call-timer"
-            >
-                00:00
-            </div>
-
-
-            <div class="call-status">
-
-                <i class="bi bi-telephone-fill"></i>
-
-                Connected
-
-            </div>
-
-            <div class="call-actions d-flex justify-content-around mt-4">
-                <button
-                id="endCall"
-                class="end-call-button"
-                >
-
-                    <i class="bi bi-telephone-x-fill"></i>
-
-                
-
-                </button>
-                
-            </div>
-
-
-        </div>
 
     </div>
-
-
-
-</div>
 
 
 <!-- Fake Call JS -->
