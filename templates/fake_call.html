@@ -366,17 +366,10 @@
 <!-- Fake Call JS -->
 <script>
 
-const callerName =
-    "{{ settings.caller_name }}";
-
-const ringtone =
-    "{{ settings.fake_call_ringtone }}";
-
-const vibration =
-    {{ settings.fake_call_vibration }};
-
-const delay =
-    {{ settings.fake_call_delay }} * 1000;
+const callerName = {{ settings.caller_name | tojson }};
+const ringtone = {{ settings.fake_call_ringtone | tojson }};
+const vibration = {{ settings.fake_call_vibration | tojson }};
+const delay = {{ settings.fake_call_delay | tojson }} * 1000;
 
 
 // ========================================
