@@ -1,8 +1,24 @@
 fetch("/get-fake-call-settings")
-settings.caller_name
-settings.fake_call_delay
-settings.fake_call_ringtone
-settings.fake_call_vibration
+    .then(response => response.json())
+    .then(data => {
+
+        if (!data.success) {
+            console.log("Fake call settings not found.");
+            return;
+        }
+
+        console.log("Fake Call Settings:", data);
+
+        // Use these values if needed
+        console.log("Caller:", data.caller_name);
+        console.log("Delay:", data.delay);
+        console.log("Ringtone:", data.ringtone);
+        console.log("Vibration:", data.vibration);
+
+    })
+    .catch(error => {
+        console.error("Error loading fake call settings:", error);
+    });
 // =========================================
 // SafeHer Fake Call
 // =========================================
@@ -200,29 +216,33 @@ function showIncomingCall() {
 // Fake Ringtone
 // =========================================
 
+let ringtoneAudio = null;
+
 function startRingtone() {
 
     stopRingtone();
 
-    // Visual notification effect.
-    // We deliberately don't attempt to play
-    // an audio file automatically because browsers
-    // can block autoplay.
+    ringtoneAudio = new Audio(
+        "/static/sounds/ringtone.mp3"
+    );
 
-    ringtoneTimer = setInterval(function () {
+    ringtoneAudio.loop = true;
 
-        if (navigator.vibrate) {
+    ringtoneAudio.play().catch(function(error) {
 
-            navigator.vibrate([
-                300,
-                200,
-                300
-            ]);
+        console.log("Ringtone could not play:", error);
 
-        }
+    });
 
-    }, 2000);
+    if (navigator.vibrate) {
 
+        navigator.vibrate([
+            300,
+            200,
+            300
+        ]);
+
+    }
 }
 
 
@@ -232,20 +252,19 @@ function startRingtone() {
 
 function stopRingtone() {
 
-    if (ringtoneTimer) {
+    if (ringtoneAudio) {
 
-        clearInterval(ringtoneTimer);
+        ringtoneAudio.pause();
 
-        ringtoneTimer = null;
+        ringtoneAudio.currentTime = 0;
+
+        ringtoneAudio = null;
 
     }
 
     if (navigator.vibrate) {
-
         navigator.vibrate(0);
-
     }
-
 }
 
 
