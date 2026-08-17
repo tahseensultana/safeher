@@ -364,6 +364,12 @@
 
 
 <!-- Fake Call JS -->
+<script>
+    const callerName = {{ settings.caller_name | tojson }};
+    const ringtone = {{ settings.fake_call_ringtone | tojson }};
+    const vibration = {{ settings.fake_call_vibration | tojson }};
+    const delay = {{ settings.fake_call_delay | tojson }};
+</script>    
 
 <script
     src="{{ url_for('static', filename='fake_call.js') }}"
