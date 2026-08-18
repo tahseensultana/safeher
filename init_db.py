@@ -1,16 +1,30 @@
-import sqlite3
 import os
+import psycopg2
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE = os.path.join(BASE_DIR, "database.db")
 
-conn = sqlite3.connect(DATABASE)
+# =========================================================
+# DATABASE CONNECTION
+# =========================================================
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL is not configured."
+    )
+
+
+conn = psycopg2.connect(DATABASE_URL)
 cursor = conn.cursor()
 
-# Create users table
+
+# =========================================================
+# USERS
+# =========================================================
+
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS users(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     fullname TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     phone TEXT NOT NULL,
@@ -19,32 +33,51 @@ CREATE TABLE IF NOT EXISTS users(
 )
 """)
 
-# Create locations table
+
+# =========================================================
+# LOCATIONS
+# =========================================================
+
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS locations(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
-    latitude REAL NOT NULL,
-    longitude REAL NOT NULL,
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL,
     event_type TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(user_id) REFERENCES users(id)
+
+    FOREIGN KEY(user_id)
+        REFERENCES users(id)
 )
 """)
+
+
+# =========================================================
+# LIVE LOCATIONS
+# =========================================================
+
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS live_locations (
+CREATE TABLE IF NOT EXISTS live_locations(
     user_id INTEGER PRIMARY KEY,
-    latitude REAL NOT NULL,
-    longitude REAL NOT NULL,
+    latitude DOUBLE PRECISION NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(user_id) REFERENCES users(id)
+
+    FOREIGN KEY(user_id)
+        REFERENCES users(id)
 )
-""")               
+""")
+
+
+# =========================================================
+# EMERGENCY CONTACTS
+# =========================================================
 
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS emergency_contacts (
+CREATE TABLE IF NOT EXISTS emergency_contacts(
 
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
 
     user_id INTEGER NOT NULL,
 
@@ -58,26 +91,44 @@ CREATE TABLE IF NOT EXISTS emergency_contacts (
 
     is_primary INTEGER DEFAULT 0,
 
-    FOREIGN KEY(user_id) REFERENCES users(id)
-
+    FOREIGN KEY(user_id)
+        REFERENCES users(id)
 )
 """)
+
+
+# =========================================================
+# SHARED LOCATIONS
+# =========================================================
+
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS shared_locations (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS shared_locations(
+
+    id SERIAL PRIMARY KEY,
+
     user_id INTEGER NOT NULL,
+
     contact_id INTEGER NOT NULL,
-    latitude REAL,
-    longitude REAL,
-    expires_at DATETIME,
+
+    latitude DOUBLE PRECISION,
+
+    longitude DOUBLE PRECISION,
+
+    expires_at TIMESTAMP,
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )
 """)
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS incident_reports (
 
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+# =========================================================
+# INCIDENT REPORTS
+# =========================================================
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS incident_reports(
+
+    id SERIAL PRIMARY KEY,
 
     user_id INTEGER,
 
@@ -87,9 +138,9 @@ CREATE TABLE IF NOT EXISTS incident_reports (
 
     description TEXT NOT NULL,
 
-    latitude REAL,
+    latitude DOUBLE PRECISION,
 
-    longitude REAL,
+    longitude DOUBLE PRECISION,
 
     image TEXT,
 
@@ -99,71 +150,112 @@ CREATE TABLE IF NOT EXISTS incident_reports (
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY(user_id) REFERENCES users(id)
-
+    FOREIGN KEY(user_id)
+        REFERENCES users(id)
 )
 """)
 
+
+# =========================================================
+# USER SETTINGS
+# =========================================================
+
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS user_settings (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS user_settings(
+
+    id SERIAL PRIMARY KEY,
+
     user_id INTEGER NOT NULL UNIQUE,
 
     emergency_alerts INTEGER DEFAULT 1,
+
     danger_zone_alerts INTEGER DEFAULT 1,
+
     nearby_user_alerts INTEGER DEFAULT 0,
+
     incident_report_updates INTEGER DEFAULT 1,
+
     location_sharing_alerts INTEGER DEFAULT 1,
+
     sound INTEGER DEFAULT 1,
+
     vibration INTEGER DEFAULT 1,
 
     location_sharing INTEGER DEFAULT 1,
+
     danger_zone_detection INTEGER DEFAULT 1,
+
     live_location_updates INTEGER DEFAULT 1,
+
     save_location_sos INTEGER DEFAULT 1,
 
     fake_call_ringtone TEXT DEFAULT 'classic',
+
     fake_call_vibration INTEGER DEFAULT 1,
+
     fake_call_delay INTEGER DEFAULT 5,
+
     caller_name TEXT DEFAULT 'Mom',
 
     anonymous_reports INTEGER DEFAULT 0,
+
     share_name_emergency INTEGER DEFAULT 0,
+
     share_phone_emergency INTEGER DEFAULT 0,
+
     show_location_to_others INTEGER DEFAULT 0,
 
     language TEXT DEFAULT 'English',
+
     sound_effects INTEGER DEFAULT 1,
 
-    FOREIGN KEY (user_id)
+    FOREIGN KEY(user_id)
         REFERENCES users(id)
         ON DELETE CASCADE
 )
 """)
 
+
+# =========================================================
+# EMERGENCY RECORDINGS
+# =========================================================
+
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS emergency_recordings (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS emergency_recordings(
+
+    id SERIAL PRIMARY KEY,
+
     user_id INTEGER NOT NULL,
+
     filename TEXT NOT NULL,
+
     duration INTEGER DEFAULT 0,
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+
+    FOREIGN KEY(user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
 )
 """)
 
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS nearby_emergency_alerts (
 
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+# =========================================================
+# NEARBY EMERGENCY ALERTS
+# =========================================================
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS nearby_emergency_alerts(
+
+    id SERIAL PRIMARY KEY,
 
     sender_id INTEGER NOT NULL,
 
     receiver_id INTEGER NOT NULL,
 
-    latitude REAL NOT NULL,
+    latitude DOUBLE PRECISION NOT NULL,
 
-    longitude REAL NOT NULL,
+    longitude DOUBLE PRECISION NOT NULL,
 
     message TEXT DEFAULT 'Emergency reported nearby',
 
@@ -182,12 +274,18 @@ CREATE TABLE IF NOT EXISTS nearby_emergency_alerts (
     FOREIGN KEY(receiver_id)
         REFERENCES users(id)
         ON DELETE CASCADE
-
 )
 """)
 
+
+# =========================================================
+# SAVE CHANGES
+# =========================================================
+
 conn.commit()
+
+cursor.close()
 conn.close()
 
-print("✅ Database initialized successfully!")
-print("Database location:", DATABASE)
+
+print("✅ PostgreSQL database initialized successfully!")
