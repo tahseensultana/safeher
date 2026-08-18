@@ -121,30 +121,44 @@ def register():
         phone = request.form['phone']
         password = request.form['password']
 
-        conn = sqlite3.connect(DATABASE)
+        # ========================================
+        # CONNECT TO POSTGRESQL
+        # ========================================
+
+        conn = get_db_connection()
         cursor = conn.cursor()
 
         try:
 
             cursor.execute("""
-            INSERT INTO users(fullname,email,phone,password)
-            VALUES(?,?,?,?)
-            """, (fullname, email, phone, password))
+                INSERT INTO users
+                (fullname, email, phone, password)
+                VALUES (%s, %s, %s, %s)
+            """, (
+                fullname,
+                email,
+                phone,
+                password
+            ))
 
             conn.commit()
 
-            return redirect(url_for('login'))
+            return redirect(
+                url_for('login')
+            )
 
-        except sqlite3.IntegrityError:
+        except psycopg2.IntegrityError:
+
+            conn.rollback()
 
             return "Email already exists!"
 
         finally:
 
+            cursor.close()
             conn.close()
 
     return render_template("register.html")
-
 @app.route('/get-started')
 def get_started():
     return render_template('get_started.html')
