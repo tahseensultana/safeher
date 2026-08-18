@@ -171,8 +171,7 @@ def dashboard():
 
     user_id = session["user_id"]
 
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = sqlite3.Row
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     # ========================================
@@ -182,7 +181,7 @@ def dashboard():
     cursor.execute("""
         SELECT id, fullname, email, phone
         FROM users
-        WHERE id = ?
+        WHERE id = %s
     """, (user_id,))
 
     user = cursor.fetchone()
@@ -202,7 +201,7 @@ def dashboard():
             live_location_updates,
             show_location_to_others
         FROM user_settings
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (user_id,))
 
     location_settings = cursor.fetchone()
