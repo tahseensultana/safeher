@@ -4297,3 +4297,9 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+try:
+    import init_db
+    print("✅ Database initialization completed.")
+except Exception as e:
+    print("❌ Database initialization failed:", e)
