@@ -2,7 +2,6 @@ import os
 import math
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-import sqlite3
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import requests
@@ -18,8 +17,6 @@ BREVO_SENDER_NAME = os.getenv("BREVO_SENDER_NAME", "SafeHer")
 TEXTBEE_API_KEY = os.getenv("TEXTBEE_API_KEY")
 TEXTBEE_DEVICE_ID = os.getenv("TEXTBEE_DEVICE_ID")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE = os.path.join(BASE_DIR, "database.db")
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 
