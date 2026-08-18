@@ -3,6 +3,7 @@ import math
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import sqlite3
+import psycopg2
 import requests
 from flask import Flask, flash, jsonify, render_template, request, redirect, url_for,session
 
@@ -18,6 +19,19 @@ TEXTBEE_DEVICE_ID = os.getenv("TEXTBEE_DEVICE_ID")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_DIR, "database.db")
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+
+def get_db_connection():
+
+    if not DATABASE_URL:
+        raise RuntimeError(
+            "DATABASE_URL is not configured."
+        )
+
+    return psycopg2.connect(
+        DATABASE_URL
+    )
 
 @app.route('/')
 def home():
