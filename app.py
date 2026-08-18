@@ -3015,31 +3015,8 @@ def send_emergency_email(user_id, latitude, longitude):
     # ========================================
 
     conn = sqlite3.connect(DATABASE)
+
     cursor = conn.cursor()
-
-
-    # ========================================
-    # CHECK EMERGENCY ALERT SETTING
-    # ========================================
-
-    cursor.execute("""
-        SELECT emergency_alerts
-        FROM user_settings
-        WHERE user_id = ?
-    """, (user_id,))
-
-    setting = cursor.fetchone()
-
-
-    if not setting or setting[0] != 1:
-
-        conn.close()
-
-        print(
-            "📧 Emergency email notifications are disabled."
-        )
-
-        return
 
 
     # ========================================
@@ -3078,7 +3055,8 @@ def send_emergency_email(user_id, latitude, longitude):
         WHERE user_id = ?
         AND email IS NOT NULL
         AND email != ''
-    """)
+    """, (user_id,))
+
 
     contacts = cursor.fetchall()
 
@@ -3095,7 +3073,7 @@ def send_emergency_email(user_id, latitude, longitude):
 
 
     # ========================================
-    # LOCATION
+    # LOCATION LINK
     # ========================================
 
     location_url = (
@@ -3114,14 +3092,11 @@ def send_emergency_email(user_id, latitude, longitude):
 
     headers = {
 
-        "accept":
-            "application/json",
+        "accept": "application/json",
 
-        "api-key":
-            BREVO_API_KEY,
+        "api-key": BREVO_API_KEY,
 
-        "content-type":
-            "application/json"
+        "content-type": "application/json"
 
     }
 
