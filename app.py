@@ -225,9 +225,8 @@ def profile():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
-
     cursor.execute("""
         SELECT fullname, email, phone, profile_photo
         FROM users
@@ -257,7 +256,7 @@ def update_profile():
 
     photo = request.files.get("profile_photo")
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -337,7 +336,7 @@ def history():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -374,7 +373,7 @@ def settings():
 
     user_id = session["user_id"]
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -674,7 +673,7 @@ def get_notification_settings():
         }), 401
 
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
 
     conn.row_factory = sqlite3.Row
 
@@ -742,7 +741,7 @@ def location():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     # Load emergency contacts
@@ -785,7 +784,7 @@ def save_location():
 
     event_type = data.get("event_type", "Saved")
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -810,7 +809,7 @@ def share_location():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -834,7 +833,7 @@ def contacts():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -875,7 +874,7 @@ def add_contact():
     email=request.form["email"]
     relationship=request.form["relationship"]
 
-    conn=sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor=conn.cursor()
 
     cursor.execute("""
@@ -915,7 +914,7 @@ def delete_contact(id):
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    conn=sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor=conn.cursor()
 
     cursor.execute("""
@@ -936,7 +935,7 @@ def delete_contact(id):
 @app.route("/update-contact", methods=["POST"])
 def update_contact():
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -988,7 +987,7 @@ def report_incident():
 
         anonymous = 1 if request.form.get("anonymous") else 0
 
-        conn = sqlite3.connect(DATABASE)
+        conn = get_db_connection()
         cursor = conn.cursor()
 
         cursor.execute("""
@@ -1070,7 +1069,7 @@ def check_danger_zones():
     # CHECK USER SETTINGS
     # ========================================
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -1255,7 +1254,7 @@ def admin_delete_user(id):
     if not session.get("admin"):
         return redirect(url_for("login"))
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
@@ -1298,7 +1297,7 @@ def admin_view_incident(id):
     if not session.get("admin"):
         return redirect(url_for("login"))
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -1372,7 +1371,7 @@ def admin_update_incident_status(id):
     # DATABASE
     # ========================================
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
 
     conn.row_factory = sqlite3.Row
 
@@ -1668,7 +1667,7 @@ def create_nearby_emergency_alert(
     longitude
 ):
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
 
     cursor = conn.cursor()
 
@@ -1910,7 +1909,7 @@ def safe_route():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -1974,7 +1973,7 @@ def nearby_danger_zones():
 
     user_id = session["user_id"]
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -2056,7 +2055,7 @@ def fake_call():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -2104,7 +2103,7 @@ def get_fake_call_settings():
             "message": "Please login first."
         }), 401
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -2333,7 +2332,7 @@ def recording_history():
         return redirect(url_for("login"))
 
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
 
     cursor = conn.cursor()
 
@@ -2369,7 +2368,7 @@ def get_location_settings():
             "success": False
         }), 401
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     conn.row_factory = sqlite3.Row
 
     cursor = conn.cursor()
@@ -2438,7 +2437,7 @@ def update_live_location():
 
     user_id = session["user_id"]
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -2529,7 +2528,7 @@ def nearby_live_locations():
 
     current_user_id = session["user_id"]
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
@@ -2587,7 +2586,7 @@ def nearby_emergency_alerts():
         }), 401
 
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
 
     cursor = conn.cursor()
 
@@ -2671,8 +2670,7 @@ def mark_nearby_alerts_read():
         }), 401
 
 
-    conn = sqlite3.connect(DATABASE)
-
+    conn = get_db_connection()
     cursor = conn.cursor()
 
 
@@ -2731,7 +2729,7 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     
 def create_nearby_emergency_alert(sender_id, latitude, longitude):
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
@@ -3077,7 +3075,7 @@ def send_emergency_email(user_id, latitude, longitude):
     # DATABASE
     # ========================================
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
 
     cursor = conn.cursor()
 
@@ -3322,8 +3320,7 @@ def send_emergency_sms(user_id, latitude, longitude):
     # DATABASE
     # ========================================
 
-    conn = sqlite3.connect(DATABASE)
-
+    conn = get_db_connection()
     cursor = conn.cursor()
 
 
@@ -3587,7 +3584,7 @@ def sos():
     # GET USER SETTINGS
     # ========================================
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     conn.row_factory = sqlite3.Row
 
     cursor = conn.cursor()
@@ -3629,7 +3626,7 @@ def sos():
 
     if save_location_sos == 1:
 
-        conn = sqlite3.connect(DATABASE)
+        conn = get_db_connection()
 
         cursor = conn.cursor()
 
@@ -3771,7 +3768,7 @@ def get_app_preferences():
             "success": False
         }), 401
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     conn.row_factory = sqlite3.Row
 
     cursor = conn.cursor()
@@ -3828,7 +3825,7 @@ def set_language():
 
     session["language"] = language
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
 
     cursor = conn.cursor()
 
@@ -3856,7 +3853,7 @@ def inject_language():
 
     if "user_id" in session:
 
-        conn = sqlite3.connect(DATABASE)
+        conn = get_db_connection()
         conn.row_factory = sqlite3.Row
 
         cursor = conn.cursor()
@@ -3893,7 +3890,7 @@ def admin_dashboard():
     # DATABASE CONNECTION
     # ==========================================
 
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
 
     conn.row_factory = sqlite3.Row
 
