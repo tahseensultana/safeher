@@ -46,34 +46,68 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
 
-        # Admin Login
+        # ========================================
+        # ADMIN LOGIN
+        # ========================================
+
         if email == "admin@safeher.com" and password == "admin123":
+
             session.clear()
             session["admin"] = True
-            return redirect(url_for("admin_dashboard"))
 
-        # Normal User Login
-        conn = sqlite3.connect(DATABASE)
+            return redirect(
+                url_for("admin_dashboard")
+            )
+
+
+        # ========================================
+        # NORMAL USER LOGIN
+        # ========================================
+
+        conn = get_db_connection()
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT * FROM users WHERE email=? AND password=?",
+            """
+            SELECT *
+            FROM users
+            WHERE email = %s
+            AND password = %s
+            """,
             (email, password)
         )
 
         user = cursor.fetchone()
+
+        cursor.close()
         conn.close()
 
+
+        # ========================================
+        # LOGIN SUCCESS
+        # ========================================
+
         if user:
+
             session.clear()
+
             session["user_id"] = user[0]
             session["fullname"] = user[1]
-            return redirect(url_for("dashboard"))
+
+            return redirect(
+                url_for("dashboard")
+            )
+
+
+        # ========================================
+        # LOGIN FAILED
+        # ========================================
 
         return render_template(
             "login.html",
             error="Invalid email or password."
         )
+
 
     return render_template("login.html")
     
