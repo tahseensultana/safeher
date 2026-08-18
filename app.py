@@ -2,39 +2,19 @@ import os
 import math
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from twilio.rest import Client
 import sqlite3
-from flask_mail import Mail, Message
+import requests
 from flask import Flask, flash, jsonify, render_template, request, redirect, url_for,session
 
-
 load_dotenv()
-TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
-client = Client(
-    TWILIO_ACCOUNT_SID,
-    TWILIO_AUTH_TOKEN
-)
-
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
-app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER")
-app.config["MAIL_PORT"] = int(os.getenv("MAIL_PORT", 587))
-app.config["MAIL_USE_TLS"] = os.getenv(
-    "MAIL_USE_TLS",
-    "True"
-).lower() == "true"
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
+BREVO_SENDER_EMAIL = os.getenv("BREVO_SENDER_EMAIL")
+BREVO_SENDER_NAME = os.getenv("BREVO_SENDER_NAME", "SafeHer")
 
-app.config["MAIL_USERNAME"] = os.getenv(
-    "MAIL_USERNAME"
-)
-
-app.config["MAIL_PASSWORD"] = os.getenv(
-    "MAIL_PASSWORD"
-)
-
-
+TEXTBEE_API_KEY = os.getenv("TEXTBEE_API_KEY")
+TEXTBEE_DEVICE_ID = os.getenv("TEXTBEE_DEVICE_ID")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE = os.path.join(BASE_DIR, "database.db")
@@ -1297,13 +1277,11 @@ def admin_update_incident_status(id):
         return redirect(url_for("login"))
 
 
-
     # ========================================
     # GET NEW STATUS
     # ========================================
 
     new_status = request.form.get("status")
-
 
     allowed_statuses = [
         "Pending",
@@ -1311,7 +1289,6 @@ def admin_update_incident_status(id):
         "Resolved",
         "Rejected"
     ]
-
 
     if new_status not in allowed_statuses:
 
@@ -1322,7 +1299,7 @@ def admin_update_incident_status(id):
 
         return redirect(
             url_for(
-                "admin_incident.html",
+                "admin_view_incident",
                 id=id
             )
         )
@@ -1340,7 +1317,7 @@ def admin_update_incident_status(id):
 
 
     # ========================================
-    # GET INCIDENT
+    # GET INCIDENT + USER
     # ========================================
 
     cursor.execute("""
@@ -1359,9 +1336,12 @@ def admin_update_incident_status(id):
         WHERE ir.id = ?
     """, (id,))
 
-
     incident = cursor.fetchone()
 
+
+    # ========================================
+    # INCIDENT NOT FOUND
+    # ========================================
 
     if not incident:
 
@@ -1377,9 +1357,19 @@ def admin_update_incident_status(id):
         )
 
 
+    # ========================================
+    # INCIDENT INFORMATION
+    # ========================================
+
     old_status = incident["status"]
 
     user_id = incident["user_id"]
+
+    user_name = incident["fullname"]
+
+    user_email = incident["email"]
+
+    incident_type = incident["incident_type"]
 
 
     # ========================================
@@ -1397,7 +1387,6 @@ def admin_update_incident_status(id):
         id
     ))
 
-
     conn.commit()
 
 
@@ -1407,18 +1396,15 @@ def admin_update_incident_status(id):
 
     cursor.execute("""
         SELECT incident_report_updates
-
         FROM user_settings
-
         WHERE user_id = ?
     """, (user_id,))
-
 
     setting = cursor.fetchone()
 
 
     # ========================================
-    # NOTIFY USER
+    # SEND EMAIL
     # ========================================
 
     if (
@@ -1427,88 +1413,154 @@ def admin_update_incident_status(id):
         setting
         and
         setting["incident_report_updates"] == 1
+        and
+        user_email
     ):
 
-        user_email = incident["email"]
+        try:
 
-        user_name = incident["fullname"]
+            # ====================================
+            # BREVO API
+            # ====================================
 
-        incident_type = incident["incident_type"]
+            brevo_url = "https://api.brevo.com/v3/smtp/email"
 
-
-        # ====================================
-        # EMAIL NOTIFICATION
-        # ====================================
-
-        if user_email:
-
-            try:
-
-                msg = Message(
-
-                    subject="📋 SafeHer Incident Report Update",
-
-                    sender=app.config["MAIL_USERNAME"],
-
-                    recipients=[
-                        user_email
-                    ]
-
-                )
+            brevo_headers = {
+                "accept": "application/json",
+                "api-key": BREVO_API_KEY,
+                "content-type": "application/json"
+            }
 
 
-                msg.body = f"""
-Hello {user_name},
+            # ====================================
+            # EMAIL CONTENT
+            # ====================================
 
-Your SafeHer incident report has been updated.
+            brevo_payload = {
 
-Incident:
-{incident_type}
+                "sender": {
+                    "name": BREVO_SENDER_NAME,
+                    "email": BREVO_SENDER_EMAIL
+                },
 
-Previous Status:
-{old_status}
+                "to": [
+                    {
+                        "email": user_email,
+                        "name": user_name
+                    }
+                ],
 
-New Status:
-{new_status}
+                "subject":
+                    "📋 SafeHer Incident Report Update",
 
-Please log in to your SafeHer account
-for more information.
+                "htmlContent": f"""
+                <html>
 
-This message was automatically sent by SafeHer.
-"""
+                <body>
+
+                    <h2>
+                        📋 SafeHer Incident Report Update
+                    </h2>
+
+                    <p>
+                        Hello {user_name},
+                    </p>
+
+                    <p>
+                        Your SafeHer incident report
+                        has been updated.
+                    </p>
+
+                    <p>
+
+                        <strong>Incident:</strong>
+                        {incident_type}
+
+                        <br>
+
+                        <strong>Previous Status:</strong>
+                        {old_status}
+
+                        <br>
+
+                        <strong>New Status:</strong>
+                        {new_status}
+
+                    </p>
+
+                    <p>
+                        Please log in to your
+                        SafeHer account for more
+                        information.
+                    </p>
+
+                    <p>
+                        This message was automatically
+                        sent by SafeHer.
+                    </p>
+
+                </body>
+
+                </html>
+                """
+            }
 
 
-                mail.send(msg)
+            # ====================================
+            # SEND EMAIL
+            # ====================================
 
+            response = requests.post(
+                brevo_url,
+                headers=brevo_headers,
+                json=brevo_payload,
+                timeout=20
+            )
+
+
+            print(
+                "📧 Brevo incident email status:",
+                response.status_code
+            )
+
+            print(
+                "📧 Brevo response:",
+                response.text
+            )
+
+
+            if response.ok:
 
                 print(
-                    "📧 Incident status email sent to:",
+                    "✅ Incident update email sent to:",
                     user_email
                 )
 
-
-            except Exception as e:
+            else:
 
                 print(
-                    "❌ Incident status email failed:",
-                    e
+                    "❌ Brevo incident email failed."
                 )
 
 
-    elif (
-        old_status != new_status
-        and
-        (
-            not setting
-            or
-            setting["incident_report_updates"] == 0
-        )
-    ):
+        except Exception as e:
+
+            print(
+                "❌ Incident email error:",
+                e
+            )
+
+
+    elif old_status != new_status:
 
         print(
             "ℹ️ Incident report notifications disabled."
         )
 
+
+    # ========================================
+    # CLOSE DATABASE
+    # ========================================
 
     conn.close()
 
@@ -1528,7 +1580,7 @@ This message was automatically sent by SafeHer.
             "admin_view_incident",
             id=id
         )
-    )    
+    )   
 
 @app.route("/police")
 def police():
@@ -2945,11 +2997,29 @@ def create_nearby_emergency_alert(sender_id, latitude, longitude):
     
 def send_emergency_email(user_id, latitude, longitude):
 
+    # ========================================
+    # CHECK BREVO CONFIGURATION
+    # ========================================
+
+    if not BREVO_API_KEY:
+        print("❌ BREVO_API_KEY is missing.")
+        return
+
+    if not BREVO_SENDER_EMAIL:
+        print("❌ BREVO_SENDER_EMAIL is missing.")
+        return
+
+
+    # ========================================
+    # DATABASE
+    # ========================================
+
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
+
     # ========================================
-    # Check Emergency Alerts setting
+    # CHECK EMERGENCY ALERT SETTING
     # ========================================
 
     cursor.execute("""
@@ -2960,17 +3030,20 @@ def send_emergency_email(user_id, latitude, longitude):
 
     setting = cursor.fetchone()
 
-    # If setting doesn't exist or is disabled
+
     if not setting or setting[0] != 1:
+
         conn.close()
 
-        print("📧 Emergency email notifications are disabled.")
+        print(
+            "📧 Emergency email notifications are disabled."
+        )
 
         return
 
 
     # ========================================
-    # Get sender information
+    # GET USER INFORMATION
     # ========================================
 
     cursor.execute("""
@@ -2981,8 +3054,13 @@ def send_emergency_email(user_id, latitude, longitude):
 
     user = cursor.fetchone()
 
+
     if not user:
+
         conn.close()
+
+        print("❌ User not found.")
+
         return
 
 
@@ -2991,7 +3069,7 @@ def send_emergency_email(user_id, latitude, longitude):
 
 
     # ========================================
-    # Get emergency contacts
+    # GET EMERGENCY CONTACTS
     # ========================================
 
     cursor.execute("""
@@ -3000,7 +3078,7 @@ def send_emergency_email(user_id, latitude, longitude):
         WHERE user_id = ?
         AND email IS NOT NULL
         AND email != ''
-    """, (user_id,))
+    """)
 
     contacts = cursor.fetchall()
 
@@ -3009,13 +3087,15 @@ def send_emergency_email(user_id, latitude, longitude):
 
     if not contacts:
 
-        print("📧 No emergency contacts with email found.")
+        print(
+            "📧 No emergency contacts with email found."
+        )
 
         return
 
 
     # ========================================
-    # Location link
+    # LOCATION
     # ========================================
 
     location_url = (
@@ -3026,7 +3106,28 @@ def send_emergency_email(user_id, latitude, longitude):
 
 
     # ========================================
-    # Send email
+    # BREVO API
+    # ========================================
+
+    url = "https://api.brevo.com/v3/smtp/email"
+
+
+    headers = {
+
+        "accept":
+            "application/json",
+
+        "api-key":
+            BREVO_API_KEY,
+
+        "content-type":
+            "application/json"
+
+    }
+
+
+    # ========================================
+    # SEND EMAIL TO EACH CONTACT
     # ========================================
 
     for contact in contacts:
@@ -3034,78 +3135,149 @@ def send_emergency_email(user_id, latitude, longitude):
         contact_name = contact[0]
         contact_email = contact[1]
 
+
+        payload = {
+
+            "sender": {
+
+                "name":
+                    BREVO_SENDER_NAME,
+
+                "email":
+                    BREVO_SENDER_EMAIL
+
+            },
+
+            "to": [
+
+                {
+
+                    "email":
+                        contact_email,
+
+                    "name":
+                        contact_name
+
+                }
+
+            ],
+
+            "subject":
+                "🚨 SafeHer Emergency Alert",
+
+            "htmlContent": (
+    f"<html>"
+    f"<body>"
+    f"<h2>🚨 SafeHer Emergency Alert</h2>"
+
+    f"<p>Hello {contact_name},</p>"
+
+    f"<p>"
+    f"<strong>{sender_name}</strong> "
+    f"has triggered an emergency SOS."
+    f"</p>"
+
+    f"<p>"
+    f"<strong>Name:</strong> {sender_name}<br>"
+    f"<strong>Phone:</strong> {sender_phone}"
+    f"</p>"
+
+    f"<p>"
+    f"<strong>Latitude:</strong> {latitude}<br>"
+    f"<strong>Longitude:</strong> {longitude}"
+    f"</p>"
+
+    f"<p>"
+    f'<a href="{location_url}">'
+    f"📍 View Emergency Location"
+    f"</a>"
+    f"</p>"
+
+    f"<p>"
+    f"Please respond immediately if assistance is required."
+    f"</p>"
+
+    f"<p>"
+    f"This message was automatically sent by SafeHer."
+    f"</p>"
+
+    f"</body>"
+    f"</html>"
+            ),
+        }
+
+
         try:
 
-            msg = Message(
-                subject="🚨 SafeHer Emergency Alert",
-                sender=app.config["MAIL_USERNAME"],
-                recipients=[contact_email]
+            response = requests.post(
+
+                url,
+
+                headers=headers,
+
+                json=payload,
+
+                timeout=20
+
             )
 
-            msg.body = f"""
-Hello {contact_name},
-
-🚨 EMERGENCY ALERT FROM SAFEHER
-
-{sender_name} has triggered an emergency SOS.
-
-Name:
-{sender_name}
-
-Phone:
-{sender_phone}
-
-Location:
-Latitude: {latitude}
-Longitude: {longitude}
-
-View Location:
-{location_url}
-
-Please respond immediately if assistance is required.
-
-This message was automatically sent by SafeHer.
-"""
-
-            mail.send(msg)
 
             print(
-                "📧 Emergency email sent to:",
-                contact_email
+                "📧 Brevo status:",
+                response.status_code
             )
+
+
+            print(
+                "📧 Brevo response:",
+                response.text
+            )
+
+
+            if response.ok:
+
+                print(
+                    "✅ Emergency email sent to:",
+                    contact_email
+                )
+
+            else:
+
+                print(
+                    "❌ Brevo email failed:",
+                    contact_email
+                )
+
 
         except Exception as e:
 
             print(
-                "❌ Email sending failed:",
-                contact_email,
+                "❌ Brevo email error:",
                 e
             )
             
 def send_emergency_sms(user_id, latitude, longitude):
 
     # ========================================
-    # CHECK TWILIO CONFIGURATION
+    # CHECK TEXTBEE CONFIGURATION
     # ========================================
 
-    if not all([
-        TWILIO_ACCOUNT_SID,
-        TWILIO_AUTH_TOKEN,
-        TWILIO_PHONE_NUMBER
-    ]):
+    if not TEXTBEE_API_KEY:
 
-        print("❌ Twilio configuration is missing.")
+        print(
+            "❌ TEXTBEE_API_KEY is missing."
+        )
+
         return
 
 
-    # ========================================
-    # CREATE TWILIO CLIENT
-    # ========================================
+    if not TEXTBEE_DEVICE_ID:
 
-    client = Client(
-        TWILIO_ACCOUNT_SID,
-        TWILIO_AUTH_TOKEN
-    )
+        print(
+            "❌ TEXTBEE_DEVICE_ID is missing."
+        )
+
+        return
 
 
     # ========================================
@@ -3134,7 +3306,10 @@ def send_emergency_sms(user_id, latitude, longitude):
 
         conn.close()
 
-        print("❌ User not found.")
+        print(
+            "❌ User not found."
+        )
+
         return
 
 
@@ -3159,8 +3334,17 @@ def send_emergency_sms(user_id, latitude, longitude):
     conn.close()
 
 
+    if not contacts:
+
+        print(
+            "📱 No emergency contacts with phone numbers found."
+        )
+
+        return
+
+
     # ========================================
-    # LOCATION LINK
+    # LOCATION
     # ========================================
 
     location_url = (
@@ -3171,8 +3355,32 @@ def send_emergency_sms(user_id, latitude, longitude):
 
 
     # ========================================
-    # SEND SMS
+    # TEXTBEE API
     # ========================================
+
+    url = (
+        "https://api.textbee.dev/"
+        "api/v1/gateway/send-bulk-sms"
+    )
+
+
+    headers = {
+
+        "x-api-key":
+            TEXTBEE_API_KEY,
+
+        "Content-Type":
+            "application/json"
+
+    }
+
+
+    # ========================================
+    # CREATE SMS MESSAGES
+    # ========================================
+
+    messages = []
+
 
     for contact in contacts:
 
@@ -3180,8 +3388,7 @@ def send_emergency_sms(user_id, latitude, longitude):
         contact_phone = contact[1]
 
 
-        message_body = f"""
-🚨 SAFEHER EMERGENCY ALERT
+        message_body = f"""🚨 SAFEHER EMERGENCY ALERT
 
 Hello {contact_name},
 
@@ -3199,37 +3406,83 @@ This message was automatically sent by SafeHer.
 """
 
 
-        try:
+        messages.append({
 
-            message = client.messages.create(
-
-                body=message_body,
-
-                from_=TWILIO_PHONE_NUMBER,
-
-                to=contact_phone
-
-            )
-
-
-            print(
-                "📱 Emergency SMS sent to:",
+            "recipients": [
                 contact_phone
-            )
+            ],
+
+            "message":
+                message_body
+
+        })
+
+
+    # ========================================
+    # TEXTBEE PAYLOAD
+    # ========================================
+
+    payload = {
+
+        "deviceId":
+            TEXTBEE_DEVICE_ID,
+
+        "messages":
+            messages
+
+    }
+
+
+    # ========================================
+    # SEND SMS
+    # ========================================
+
+    try:
+
+        response = requests.post(
+
+            url,
+
+            headers=headers,
+
+            json=payload,
+
+            timeout=20
+
+        )
+
+
+        print(
+            "📱 TextBee status:",
+            response.status_code
+        )
+
+
+        print(
+            "📱 TextBee response:",
+            response.text
+        )
+
+
+        if response.ok:
 
             print(
-                "Message SID:",
-                message.sid
+                "✅ Emergency SMS request sent."
+            )
+
+        else:
+
+            print(
+                "❌ TextBee SMS request failed."
             )
 
 
-        except Exception as e:
+    except Exception as e:
 
-            print(
-                "❌ SMS sending failed:",
-                contact_phone,
-                e
-            )               
+        print(
+            "❌ TextBee connection error:",
+            e
+        )               
     
 @app.route("/sos", methods=["POST"])
 def sos():
