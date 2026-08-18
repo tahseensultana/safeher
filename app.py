@@ -230,7 +230,7 @@ def profile():
     cursor.execute("""
         SELECT fullname, email, phone, profile_photo
         FROM users
-        WHERE id = ?
+        WHERE id = %s
     """, (session["user_id"],))
 
     user = cursor.fetchone()
@@ -261,10 +261,10 @@ def update_profile():
 
     cursor.execute("""
         UPDATE users
-        SET fullname = ?,
-            email = ?,
-            phone = ?
-        WHERE id = ?
+        SET fullname = %s,
+            email = %s,
+            phone = %s
+        WHERE id = %s
     """, (
         fullname,
         email,
@@ -308,8 +308,8 @@ def update_profile():
 
             cursor.execute("""
                 UPDATE users
-                SET profile_photo = ?
-                WHERE id = ?
+                SET profile_photo = %s
+                WHERE id = %s
             """, (
                 new_filename,
                 user_id
@@ -349,11 +349,11 @@ def history():
 
         FROM locations
 
-        WHERE user_id=?
+        WHERE user_id=%s
 
         ORDER BY created_at DESC
 
-    """,(session["user_id"],))
+    """, (session["user_id"],))
 
     history = cursor.fetchall()
 
@@ -374,7 +374,6 @@ def settings():
     user_id = session["user_id"]
 
     conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     # ========================================
@@ -384,7 +383,7 @@ def settings():
     cursor.execute("""
         SELECT *
         FROM user_settings
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (user_id,))
 
     existing_settings = cursor.fetchone()
@@ -419,13 +418,12 @@ def settings():
                 share_name_emergency,
                 share_phone_emergency,
 
-                
                 language,
                 sound_effects
             )
 
             VALUES (
-                ?,
+                %s,
 
                 1,
                 1,
@@ -532,7 +530,6 @@ def settings():
             1 if request.form.get("share_phone_emergency") else 0
         )
 
-
         sound_effects = (
             1 if request.form.get("sound_effects") else 0
         )
@@ -579,35 +576,34 @@ def settings():
 
             SET
 
-                emergency_alerts = ?,
-                danger_zone_alerts = ?,
-                nearby_user_alerts = ?,
-                incident_report_updates = ?,
-                location_sharing_alerts = ?,
+                emergency_alerts = %s,
+                danger_zone_alerts = %s,
+                nearby_user_alerts = %s,
+                incident_report_updates = %s,
+                location_sharing_alerts = %s,
 
-                sound = ?,
-                vibration = ?,
+                sound = %s,
+                vibration = %s,
 
-                location_sharing = ?,
-                danger_zone_detection = ?,
-                live_location_updates = ?,
-                save_location_sos = ?,
+                location_sharing = %s,
+                danger_zone_detection = %s,
+                live_location_updates = %s,
+                save_location_sos = %s,
 
-                fake_call_ringtone = ?,
-                fake_call_vibration = ?,
-                fake_call_delay = ?,
-                caller_name = ?,
+                fake_call_ringtone = %s,
+                fake_call_vibration = %s,
+                fake_call_delay = %s,
+                caller_name = %s,
 
-                anonymous_reports = ?,
-                show_location_to_others = ?,
-                share_name_emergency = ?,
-                share_phone_emergency = ?,
+                anonymous_reports = %s,
+                show_location_to_others = %s,
+                share_name_emergency = %s,
+                share_phone_emergency = %s,
 
-                
-                language = ?,
-                sound_effects = ?
+                language = %s,
+                sound_effects = %s
 
-            WHERE user_id = ?
+            WHERE user_id = %s
 
         """, (
 
@@ -635,7 +631,6 @@ def settings():
             share_name_emergency,
             share_phone_emergency,
 
-            
             language,
             sound_effects,
 
@@ -651,7 +646,7 @@ def settings():
     cursor.execute("""
         SELECT *
         FROM user_settings
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (user_id,))
 
     settings = cursor.fetchone()
@@ -662,7 +657,7 @@ def settings():
         "settings.html",
         settings=settings
     )
-    
+
 @app.route("/get-notification-settings")
 def get_notification_settings():
 
@@ -674,11 +669,7 @@ def get_notification_settings():
 
 
     conn = get_db_connection()
-
-    conn.row_factory = sqlite3.Row
-
     cursor = conn.cursor()
-
 
     cursor.execute("""
         SELECT
@@ -690,23 +681,20 @@ def get_notification_settings():
             sound,
             vibration
         FROM user_settings
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (
         session["user_id"],
     ))
 
-
     settings = cursor.fetchone()
 
     conn.close()
-
 
     if not settings:
 
         return jsonify({
             "success": False
         })
-
 
     return jsonify({
 
@@ -734,7 +722,7 @@ def get_notification_settings():
             settings["vibration"]
 
     })
-    
+
 @app.route("/location")
 def location():
 
@@ -748,7 +736,7 @@ def location():
     cursor.execute("""
         SELECT id, fullname, phone, email
         FROM emergency_contacts
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (session["user_id"],))
 
     contacts = cursor.fetchall()
@@ -761,7 +749,7 @@ def location():
         cursor.execute("""
             SELECT latitude, longitude, event_type, created_at
             FROM locations
-            WHERE id=? AND user_id=?
+            WHERE id=%s AND user_id=%s
         """, (location_id, session["user_id"]))
 
         saved_location = cursor.fetchone()
@@ -773,7 +761,7 @@ def location():
         saved_location=saved_location,
         contacts=contacts
     )
-    
+
 @app.route("/save-location", methods=["POST"])
 def save_location():
 
@@ -790,7 +778,7 @@ def save_location():
     cursor.execute("""
         INSERT INTO locations
         (user_id, latitude, longitude, event_type)
-        VALUES (?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s)
     """, (
         session["user_id"],
         data["latitude"],
@@ -815,18 +803,18 @@ def share_location():
     cursor.execute("""
         SELECT id, fullname, phone
         FROM emergency_contacts
-        WHERE user_id=?
+        WHERE user_id=%s
         ORDER BY is_primary DESC, fullname
     """, (session["user_id"],))
 
     contacts = cursor.fetchall()
 
     return render_template(
-    "location.html",
-    saved_location=None,
-    contacts=contacts
-)
-    
+        "location.html",
+        saved_location=None,
+        contacts=contacts
+    )
+
 @app.route("/contacts")
 def contacts():
 
@@ -848,13 +836,13 @@ def contacts():
 
         FROM emergency_contacts
 
-        WHERE user_id=?
+        WHERE user_id=%s
 
         ORDER BY is_primary DESC,id DESC
 
-    """,(session["user_id"],))
+    """, (session["user_id"],))
 
-    contacts=cursor.fetchall()
+    contacts = cursor.fetchall()
 
     conn.close()
 
@@ -862,20 +850,20 @@ def contacts():
         "contacts.html",
         contacts=contacts
     )
-    
-@app.route("/add-contact",methods=["POST"])
+
+@app.route("/add-contact", methods=["POST"])
 def add_contact():
 
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    fullname=request.form["fullname"]
-    phone=request.form["phone"]
-    email=request.form["email"]
-    relationship=request.form["relationship"]
+    fullname = request.form["fullname"]
+    phone = request.form["phone"]
+    email = request.form["email"]
+    relationship = request.form["relationship"]
 
     conn = get_db_connection()
-    cursor=conn.cursor()
+    cursor = conn.cursor()
 
     cursor.execute("""
 
@@ -889,9 +877,9 @@ def add_contact():
 
         )
 
-        VALUES(?,?,?,?,?)
+        VALUES(%s,%s,%s,%s,%s)
 
-    """,(
+    """, (
 
         session["user_id"],
         fullname,
@@ -904,9 +892,9 @@ def add_contact():
     conn.commit()
     conn.close()
 
-    flash("Emergency contact added successfully.","success")
+    flash("Emergency contact added successfully.", "success")
 
-    return redirect(url_for("contacts"))    
+    return redirect(url_for("contacts"))
 
 @app.route("/delete-contact/<int:id>")
 def delete_contact(id):
@@ -915,20 +903,20 @@ def delete_contact(id):
         return redirect(url_for("login"))
 
     conn = get_db_connection()
-    cursor=conn.cursor()
+    cursor = conn.cursor()
 
     cursor.execute("""
 
         DELETE FROM emergency_contacts
 
-        WHERE id=? AND user_id=?
+        WHERE id=%s AND user_id=%s
 
-    """,(id,session["user_id"]))
+    """, (id, session["user_id"]))
 
     conn.commit()
     conn.close()
 
-    flash("Contact removed.","success")
+    flash("Contact removed.", "success")
 
     return redirect(url_for("contacts"))
 
@@ -943,21 +931,21 @@ def update_contact():
         UPDATE emergency_contacts
 
         SET
-        fullname=?,
-        phone=?,
-        email=?,
-        relationship=?,
-        is_primary=?
+        fullname=%s,
+        phone=%s,
+        email=%s,
+        relationship=%s,
+        is_primary=%s
 
-        WHERE id=? AND user_id=?
+        WHERE id=%s AND user_id=%s
 
-    """,(
+    """, (
 
         request.form["fullname"],
         request.form["phone"],
         request.form["email"],
         request.form["relationship"],
-        request.form.get("is_primary",0),
+        request.form.get("is_primary", 0),
         request.form["contact_id"],
         session["user_id"]
 
@@ -1004,9 +992,9 @@ def report_incident():
 
         )
 
-        VALUES(?,?,?,?,?,?,?)
+        VALUES(%s,%s,%s,%s,%s,%s,%s)
 
-        """,(
+        """, (
 
             session["user_id"],
             incident,
@@ -1021,7 +1009,7 @@ def report_incident():
         conn.commit()
         conn.close()
 
-        flash("Incident reported successfully.","success")
+        flash("Incident reported successfully.", "success")
 
         return redirect(url_for("dashboard"))
 
@@ -1070,21 +1058,17 @@ def check_danger_zones():
     # ========================================
 
     conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
-
 
     cursor.execute("""
         SELECT
             danger_zone_detection,
             danger_zone_alerts
         FROM user_settings
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (session["user_id"],))
 
-
     settings = cursor.fetchone()
-
 
     # Default settings
 
@@ -1131,12 +1115,11 @@ def check_danger_zones():
         FROM incident_reports
         WHERE latitude IS NOT NULL
         AND longitude IS NOT NULL
-        AND TRIM(latitude) != ''
-        AND TRIM(longitude) != ''
+        AND TRIM(latitude::text) != ''
+        AND TRIM(longitude::text) != ''
         AND status != 'Rejected'
         ORDER BY created_at DESC
     """)
-
 
     incidents = cursor.fetchall()
 
@@ -1259,20 +1242,17 @@ def admin_delete_user(id):
 
     try:
 
-      
-
-
         # Delete user's emergency contacts
         cursor.execute("""
             DELETE FROM emergency_contacts
-            WHERE user_id = ?
+            WHERE user_id = %s
         """, (id,))
 
 
         # Finally delete the user
         cursor.execute("""
             DELETE FROM users
-            WHERE id = ?
+            WHERE id = %s
         """, (id,))
 
 
@@ -1298,7 +1278,6 @@ def admin_view_incident(id):
         return redirect(url_for("login"))
 
     conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -1313,7 +1292,7 @@ def admin_view_incident(id):
         LEFT JOIN users
         ON incident_reports.user_id = users.id
 
-        WHERE incident_reports.id = ?
+        WHERE incident_reports.id = %s
     """, (id,))
 
     incident = cursor.fetchone()
@@ -1327,7 +1306,7 @@ def admin_view_incident(id):
         "admin_incident.html",
         incident=incident
     )
-    
+
 @app.route("/admin/update-incident-status/<int:id>", methods=["POST"])
 def admin_update_incident_status(id):
 
@@ -1372,9 +1351,6 @@ def admin_update_incident_status(id):
     # ========================================
 
     conn = get_db_connection()
-
-    conn.row_factory = sqlite3.Row
-
     cursor = conn.cursor()
 
 
@@ -1395,7 +1371,7 @@ def admin_update_incident_status(id):
         JOIN users u
             ON ir.user_id = u.id
 
-        WHERE ir.id = ?
+        WHERE ir.id = %s
     """, (id,))
 
     incident = cursor.fetchone()
@@ -1441,9 +1417,9 @@ def admin_update_incident_status(id):
     cursor.execute("""
         UPDATE incident_reports
 
-        SET status = ?
+        SET status = %s
 
-        WHERE id = ?
+        WHERE id = %s
     """, (
         new_status,
         id
@@ -1459,7 +1435,7 @@ def admin_update_incident_status(id):
     cursor.execute("""
         SELECT incident_report_updates
         FROM user_settings
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (user_id,))
 
     setting = cursor.fetchone()
@@ -1642,7 +1618,7 @@ def admin_update_incident_status(id):
             "admin_view_incident",
             id=id
         )
-    )   
+    )
 
 @app.route("/police")
 def police():
@@ -1668,9 +1644,7 @@ def create_nearby_emergency_alert(
 ):
 
     conn = get_db_connection()
-
     cursor = conn.cursor()
-
 
     # ========================================
     # Get sender information
@@ -1679,22 +1653,17 @@ def create_nearby_emergency_alert(
     cursor.execute("""
         SELECT fullname, phone
         FROM users
-        WHERE id=?
+        WHERE id=%s
     """, (sender_id,))
 
     sender = cursor.fetchone()
 
-
     if not sender:
-
         conn.close()
-
         return
-
 
     sender_name = sender[0]
     sender_phone = sender[1]
-
 
     # ========================================
     # Get sender privacy settings
@@ -1706,24 +1675,19 @@ def create_nearby_emergency_alert(
             share_phone_emergency,
             show_location_to_others
         FROM user_settings
-        WHERE user_id=?
+        WHERE user_id=%s
     """, (sender_id,))
 
     settings = cursor.fetchone()
 
-
     if settings:
-
         share_name = settings[0]
         share_phone = settings[1]
         show_location = settings[2]
-
     else:
-
         share_name = 0
         share_phone = 0
         show_location = 1
-
 
     # ========================================
     # Find nearby users
@@ -1741,7 +1705,7 @@ def create_nearby_emergency_alert(
         LEFT JOIN locations l
             ON l.user_id = u.id
 
-        WHERE u.id != ?
+        WHERE u.id != %s
 
         AND EXISTS (
 
@@ -1752,13 +1716,11 @@ def create_nearby_emergency_alert(
 
         )
 
-        GROUP BY u.id
+        GROUP BY u.id, u.fullname, u.phone, l.latitude, l.longitude
 
     """, (sender_id,))
 
-
     nearby_users = cursor.fetchall()
-
 
     # ========================================
     # Calculate distance
@@ -1798,7 +1760,6 @@ def create_nearby_emergency_alert(
 
         return R * c
 
-
     # ========================================
     # Create alerts
     # ========================================
@@ -1810,30 +1771,21 @@ def create_nearby_emergency_alert(
         receiver_lat = user[3]
         receiver_lng = user[4]
 
-
         if (
             receiver_lat is None
             or receiver_lng is None
         ):
-
             continue
 
-
         distance = calculate_distance(
-
             latitude,
             longitude,
-
             receiver_lat,
             receiver_lng
-
         )
 
-
         # 1 km radius
-
         if distance <= 1.0:
-
 
             alert_name = (
                 sender_name
@@ -1841,13 +1793,11 @@ def create_nearby_emergency_alert(
                 else None
             )
 
-
             alert_phone = (
                 sender_phone
                 if share_phone
                 else None
             )
-
 
             alert_latitude = (
                 latitude
@@ -1855,13 +1805,11 @@ def create_nearby_emergency_alert(
                 else None
             )
 
-
             alert_longitude = (
                 longitude
                 if show_location
                 else None
             )
-
 
             cursor.execute("""
                 INSERT INTO nearby_emergency_alerts
@@ -1874,7 +1822,7 @@ def create_nearby_emergency_alert(
                     sender_name,
                     sender_phone
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
             """, (
 
                 sender_id,
@@ -1897,9 +1845,7 @@ def create_nearby_emergency_alert(
 
             ))
 
-
     conn.commit()
-
     conn.close()
 
 
@@ -1910,8 +1856,7 @@ def safe_route():
         return redirect(url_for("login"))
 
     conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cursor.execute("""
         SELECT
@@ -1961,7 +1906,8 @@ def safe_route():
         "route.html",
         danger_locations=danger_locations
     )
-    
+
+
 @app.route("/nearby-danger-zones")
 def nearby_danger_zones():
 
@@ -1974,14 +1920,13 @@ def nearby_danger_zones():
     user_id = session["user_id"]
 
     conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     # Get user's latest location
     cursor.execute("""
         SELECT latitude, longitude
         FROM locations
-        WHERE user_id = ?
+        WHERE user_id = %s
         ORDER BY created_at DESC
         LIMIT 1
     """, (user_id,))
@@ -2047,7 +1992,8 @@ def nearby_danger_zones():
     return jsonify({
         "success": True,
         "danger_zones": danger_zones
-    })    
+    })
+
 
 @app.route("/fake-call")
 def fake_call():
@@ -2056,8 +2002,7 @@ def fake_call():
         return redirect(url_for("login"))
 
     conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cursor.execute("""
         SELECT
@@ -2066,7 +2011,7 @@ def fake_call():
             fake_call_delay,
             caller_name
         FROM user_settings
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (session["user_id"],))
 
     row = cursor.fetchone()
@@ -2094,6 +2039,7 @@ def fake_call():
         settings=settings
     )
 
+
 @app.route("/get-fake-call-settings")
 def get_fake_call_settings():
 
@@ -2104,8 +2050,7 @@ def get_fake_call_settings():
         }), 401
 
     conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cursor.execute("""
         SELECT
@@ -2114,7 +2059,7 @@ def get_fake_call_settings():
             fake_call_delay,
             caller_name
         FROM user_settings
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (session["user_id"],))
 
     settings = cursor.fetchone()
@@ -2143,6 +2088,7 @@ def get_fake_call_settings():
             settings["caller_name"]
     })
 
+
 @app.route("/emergency-recording")
 def emergency_recording():
 
@@ -2150,6 +2096,7 @@ def emergency_recording():
         return redirect(url_for("login"))
 
     return render_template("emergency_recording.html")
+
 
 @app.route("/save-recording", methods=["POST"])
 def save_recording():
@@ -2160,7 +2107,6 @@ def save_recording():
             "message": "Please login first."
         }), 401
 
-
     audio = request.files.get("audio")
 
     if not audio:
@@ -2169,14 +2115,12 @@ def save_recording():
             "message": "No audio file received."
         }), 400
 
-
     duration = request.form.get("duration", 0)
 
     try:
         duration = int(duration)
-    except:
+    except Exception:
         duration = 0
-
 
     # ========================================
     # Recording folder
@@ -2194,7 +2138,6 @@ def save_recording():
         exist_ok=True
     )
 
-
     # ========================================
     # Determine actual audio format
     # ========================================
@@ -2203,29 +2146,18 @@ def save_recording():
 
     print("Uploaded MIME type:", mime_type)
 
-
     if "mp4" in mime_type:
-
         extension = "mp4"
-
     elif "ogg" in mime_type:
-
         extension = "ogg"
-
     elif "wav" in mime_type:
-
         extension = "wav"
-
     else:
-
         extension = "webm"
-
 
     # ========================================
     # Unique filename
     # ========================================
-
-    import uuid
 
     filename = (
         str(uuid.uuid4())
@@ -2233,19 +2165,16 @@ def save_recording():
         + extension
     )
 
-
     filepath = os.path.join(
         recording_folder,
         filename
     )
-
 
     # ========================================
     # Save audio
     # ========================================
 
     audio.save(filepath)
-
 
     # ========================================
     # Verify file was actually saved
@@ -2257,7 +2186,6 @@ def save_recording():
             "success": False,
             "message": "Audio file could not be saved."
         }), 500
-
 
     file_size = os.path.getsize(filepath)
 
@@ -2272,7 +2200,6 @@ def save_recording():
         "bytes"
     )
 
-
     if file_size == 0:
 
         return jsonify({
@@ -2280,15 +2207,12 @@ def save_recording():
             "message": "Recording file is empty."
         }), 500
 
-
     # ========================================
     # Save information in database
     # ========================================
 
-    conn = sqlite3.connect(DATABASE)
-
+    conn = get_db_connection()
     cursor = conn.cursor()
-
 
     cursor.execute("""
         INSERT INTO emergency_recordings
@@ -2297,16 +2221,14 @@ def save_recording():
             filename,
             duration
         )
-        VALUES (?, ?, ?)
+        VALUES (%s, %s, %s)
     """, (
         session["user_id"],
         filename,
         duration
     ))
 
-
     conn.commit()
-
     conn.close()
 
     # ========================================
@@ -2324,16 +2246,15 @@ def save_recording():
             filename
 
     })
-    
+
+
 @app.route("/recording-history")
 def recording_history():
 
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-
     conn = get_db_connection()
-
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -2343,7 +2264,7 @@ def recording_history():
             duration,
             created_at
         FROM emergency_recordings
-        WHERE user_id = ?
+        WHERE user_id = %s
         ORDER BY created_at DESC
     """, (
         session["user_id"],
@@ -2353,12 +2274,12 @@ def recording_history():
 
     conn.close()
 
-
     return render_template(
         "recording_history.html",
         recordings=recordings
-    )  
-    
+    )
+
+
 @app.route("/get-location-settings")
 def get_location_settings():
 
@@ -2369,9 +2290,7 @@ def get_location_settings():
         }), 401
 
     conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
-
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cursor.execute("""
         SELECT
@@ -2379,7 +2298,7 @@ def get_location_settings():
             live_location_updates,
             save_location_sos
         FROM user_settings
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (session["user_id"],))
 
     settings = cursor.fetchone()
@@ -2403,8 +2322,9 @@ def get_location_settings():
 
         "save_location_sos":
             settings["save_location_sos"]
-    })  
-    
+    })
+
+
 @app.route("/update-live-location", methods=["POST"])
 def update_live_location():
 
@@ -2446,7 +2366,7 @@ def update_live_location():
             live_location_updates,
             show_location_to_others
         FROM user_settings
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (user_id,))
 
     settings = cursor.fetchone()
@@ -2490,13 +2410,13 @@ def update_live_location():
             longitude,
             updated_at
         )
-        VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+        VALUES (%s, %s, %s, NOW())
 
-        ON CONFLICT(user_id)
+        ON CONFLICT (user_id)
         DO UPDATE SET
-            latitude = excluded.latitude,
-            longitude = excluded.longitude,
-            updated_at = CURRENT_TIMESTAMP
+            latitude = EXCLUDED.latitude,
+            longitude = EXCLUDED.longitude,
+            updated_at = NOW()
     """, (
         user_id,
         latitude,
@@ -2515,8 +2435,9 @@ def update_live_location():
     return jsonify({
         "success": True,
         "message": "Live location updated."
-    })      
-    
+    })
+
+
 @app.route("/nearby-live-locations")
 def nearby_live_locations():
 
@@ -2529,8 +2450,7 @@ def nearby_live_locations():
     current_user_id = session["user_id"]
 
     conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
     cursor.execute("""
         SELECT
@@ -2548,7 +2468,7 @@ def nearby_live_locations():
         JOIN user_settings s
             ON s.user_id = ll.user_id
 
-        WHERE ll.user_id != ?
+        WHERE ll.user_id != %s
         AND s.show_location_to_others = 1
 
         ORDER BY ll.updated_at DESC
@@ -2573,23 +2493,17 @@ def nearby_live_locations():
     return jsonify({
         "success": True,
         "locations": locations
-    })    
-    
+    })
 @app.route("/nearby-emergency-alerts")
 def nearby_emergency_alerts():
-
     if "user_id" not in session:
-
         return jsonify({
             "success": False,
             "message": "Please login first."
         }), 401
 
-
     conn = get_db_connection()
-
     cursor = conn.cursor()
-
 
     cursor.execute("""
         SELECT
@@ -2602,56 +2516,37 @@ def nearby_emergency_alerts():
             created_at,
             is_read
         FROM nearby_emergency_alerts
-        WHERE receiver_id=?
+        WHERE receiver_id=%s
         AND is_read=0
         ORDER BY created_at DESC
     """, (
         session["user_id"],
     ))
 
-
     rows = cursor.fetchall()
-
     conn.close()
-
 
     alerts = []
 
-
     for row in rows:
-
         alerts.append({
-
             "id": row[0],
-
             "name": row[1],
-
             "phone": row[2],
-
             "latitude": row[3],
-
             "longitude": row[4],
-
             "message": row[5],
-
             "created_at": row[6],
-
             "is_read": row[7]
-
         })
 
-
     return jsonify({
-
         "success": True,
-
         "alerts": alerts
-
     })    
     
 @app.route("/nearby-emergency-alerts-page")
 def nearby_emergency_alerts_page():
-
     if "user_id" not in session:
         return redirect(url_for("login"))
 
@@ -2661,49 +2556,35 @@ def nearby_emergency_alerts_page():
 
 @app.route("/mark-nearby-alerts-read", methods=["POST"])
 def mark_nearby_alerts_read():
-
     if "user_id" not in session:
-
         return jsonify({
             "success": False,
             "message": "Please login first."
         }), 401
 
-
     conn = get_db_connection()
     cursor = conn.cursor()
 
-
     cursor.execute("""
         UPDATE nearby_emergency_alerts
-
         SET is_read = 1
-
-        WHERE receiver_id = ?
-
+        WHERE receiver_id = %s
         AND is_read = 0
     """, (
         session["user_id"],
     ))
 
-
     updated = cursor.rowcount
-
 
     conn.commit()
     conn.close()
 
-
     return jsonify({
-
         "success": True,
-
         "updated": updated
-
     })   
 
 def calculate_distance(lat1, lon1, lat2, lon2):
-
     R = 6371
 
     lat1 = math.radians(lat1)
@@ -2728,12 +2609,10 @@ def calculate_distance(lat1, lon1, lat2, lon2):
     return R * c    
     
 def create_nearby_emergency_alert(sender_id, latitude, longitude):
-
     conn = get_db_connection()
     cursor = conn.cursor()
 
     try:
-
         # ========================================
         # GET SENDER INFORMATION
         # ========================================
@@ -2741,23 +2620,19 @@ def create_nearby_emergency_alert(sender_id, latitude, longitude):
         cursor.execute("""
             SELECT fullname, phone
             FROM users
-            WHERE id = ?
+            WHERE id = %s
         """, (sender_id,))
 
         sender = cursor.fetchone()
 
         if not sender:
-
             print(
                 f"❌ Sender not found: {sender_id}"
             )
-
             return
-
 
         sender_name = sender[0]
         sender_phone = sender[1]
-
 
         # ========================================
         # GET SENDER PRIVACY SETTINGS
@@ -2769,46 +2644,33 @@ def create_nearby_emergency_alert(sender_id, latitude, longitude):
                 COALESCE(share_phone_emergency, 0),
                 COALESCE(show_location_to_others, 0)
             FROM user_settings
-            WHERE user_id = ?
+            WHERE user_id = %s
         """, (sender_id,))
 
         sender_settings = cursor.fetchone()
 
-
         if sender_settings:
-
             share_name = sender_settings[0]
             share_phone = sender_settings[1]
             show_location = sender_settings[2]
-
         else:
-
             share_name = 0
             share_phone = 0
             show_location = 0
-
 
         # ========================================
         # PRIVACY
         # ========================================
 
         if share_name == 1:
-
             alert_name = sender_name
-
         else:
-
             alert_name = "SafeHer User"
 
-
         if share_phone == 1:
-
             alert_phone = sender_phone
-
         else:
-
             alert_phone = "Hidden"
-
 
         # ========================================
         # GET ALL OTHER USERS
@@ -2817,23 +2679,19 @@ def create_nearby_emergency_alert(sender_id, latitude, longitude):
         cursor.execute("""
             SELECT id
             FROM users
-            WHERE id != ?
+            WHERE id != %s
         """, (sender_id,))
 
         users = cursor.fetchall()
 
-
         alerts_created = 0
-
 
         # ========================================
         # CHECK EVERY USER
         # ========================================
 
         for user in users:
-
             receiver_id = user[0]
-
 
             # ====================================
             # RECEIVER SETTINGS
@@ -2843,35 +2701,27 @@ def create_nearby_emergency_alert(sender_id, latitude, longitude):
                 SELECT
                     COALESCE(nearby_user_alerts, 1)
                 FROM user_settings
-                WHERE user_id = ?
+                WHERE user_id = %s
             """, (receiver_id,))
 
             receiver_setting = cursor.fetchone()
 
-
             if receiver_setting:
-
                 nearby_user_alerts = receiver_setting[0]
-
             else:
-
                 # Default ON
                 nearby_user_alerts = 1
-
 
             # ====================================
             # ALERTS DISABLED
             # ====================================
 
             if nearby_user_alerts != 1:
-
                 print(
                     f"ℹ️ User {receiver_id} "
                     f"disabled Nearby User Alerts."
                 )
-
                 continue
-
 
             # ====================================
             # GET RECEIVER LIVE LOCATION
@@ -2880,86 +2730,70 @@ def create_nearby_emergency_alert(sender_id, latitude, longitude):
             receiver_location = None
 
             try:
-
                 cursor.execute("""
                     SELECT
                         latitude,
                         longitude
                     FROM live_location_updates
-                    WHERE user_id = ?
+                    WHERE user_id = %s
                     ORDER BY updated_at DESC
                     LIMIT 1
                 """, (receiver_id,))
 
                 receiver_location = cursor.fetchone()
 
-            except sqlite3.OperationalError:
-
-                # Table/column may not exist.
+            except Exception:
+                # Table/column may not exist or query failed.
                 # Fall back to saved locations.
+                conn.rollback()
                 receiver_location = None
-
 
             # ====================================
             # FALLBACK TO LOCATIONS TABLE
             # ====================================
 
             if not receiver_location:
-
                 cursor.execute("""
                     SELECT
                         latitude,
                         longitude
                     FROM locations
-                    WHERE user_id = ?
+                    WHERE user_id = %s
                     ORDER BY created_at DESC
                     LIMIT 1
                 """, (receiver_id,))
 
                 receiver_location = cursor.fetchone()
 
-
             # ====================================
             # NO LOCATION
             # ====================================
 
             if not receiver_location:
-
                 print(
                     f"⚠️ No location found "
                     f"for user {receiver_id}"
                 )
-
                 continue
 
-
-            receiver_latitude = \
-                receiver_location[0]
-
-            receiver_longitude = \
-                receiver_location[1]
-
+            receiver_latitude = receiver_location[0]
+            receiver_longitude = receiver_location[1]
 
             # ====================================
             # CALCULATE DISTANCE
             # ====================================
 
             distance = calculate_distance(
-
                 latitude,
                 longitude,
-
                 receiver_latitude,
                 receiver_longitude
-
             )
-
 
             print(
                 f"📍 User {receiver_id}: "
                 f"{distance:.3f} km away"
             )
-
 
             # ====================================
             # 1 KM RADIUS
@@ -2967,21 +2801,16 @@ def create_nearby_emergency_alert(sender_id, latitude, longitude):
 
             if distance <= 1.0:
 
-
                 # ====================================
                 # LOCATION SHARING
                 # ====================================
 
                 if show_location == 1:
-
                     alert_latitude = latitude
                     alert_longitude = longitude
-
                 else:
-
                     alert_latitude = None
                     alert_longitude = None
-
 
                 # ====================================
                 # CREATE ALERT
@@ -2999,35 +2828,23 @@ def create_nearby_emergency_alert(sender_id, latitude, longitude):
                         sender_phone,
                         is_read
                     )
-
-                    VALUES (?, ?, ?, ?, ?, ?, ?, 0)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, 0)
                 """, (
-
                     sender_id,
-
                     receiver_id,
-
                     alert_latitude,
-
                     alert_longitude,
-
                     "Emergency reported nearby",
-
                     alert_name,
-
                     alert_phone
-
                 ))
 
-
                 alerts_created += 1
-
 
                 print(
                     f"🚨 Alert created "
                     f"for user {receiver_id}"
                 )
-
 
         # ========================================
         # COMMIT
@@ -3035,29 +2852,22 @@ def create_nearby_emergency_alert(sender_id, latitude, longitude):
 
         conn.commit()
 
-
         print(
             f"🚨 Nearby alerts created: "
             f"{alerts_created}"
         )
 
-
     except Exception as e:
-
         conn.rollback()
-
         print(
             "❌ Nearby emergency alert error:",
             e
         )
 
-
     finally:
-
         conn.close()
     
 def send_emergency_email(user_id, latitude, longitude):
-
     # ========================================
     # CHECK BREVO CONFIGURATION
     # ========================================
@@ -3070,15 +2880,12 @@ def send_emergency_email(user_id, latitude, longitude):
         print("❌ BREVO_SENDER_EMAIL is missing.")
         return
 
-
     # ========================================
     # DATABASE
     # ========================================
 
     conn = get_db_connection()
-
     cursor = conn.cursor()
-
 
     # ========================================
     # GET USER INFORMATION
@@ -3087,24 +2894,18 @@ def send_emergency_email(user_id, latitude, longitude):
     cursor.execute("""
         SELECT fullname, phone
         FROM users
-        WHERE id = ?
+        WHERE id = %s
     """, (user_id,))
 
     user = cursor.fetchone()
 
-
     if not user:
-
         conn.close()
-
         print("❌ User not found.")
-
         return
-
 
     sender_name = user[0]
     sender_phone = user[1]
-
 
     # ========================================
     # GET EMERGENCY CONTACTS
@@ -3113,25 +2914,19 @@ def send_emergency_email(user_id, latitude, longitude):
     cursor.execute("""
         SELECT fullname, email
         FROM emergency_contacts
-        WHERE user_id = ?
+        WHERE user_id = %s
         AND email IS NOT NULL
         AND email != ''
     """, (user_id,))
 
-
     contacts = cursor.fetchall()
-
     conn.close()
 
-
     if not contacts:
-
         print(
             "📧 No emergency contacts with email found."
         )
-
         return
-
 
     # ========================================
     # LOCATION LINK
@@ -3143,178 +2938,122 @@ def send_emergency_email(user_id, latitude, longitude):
         f"&mlon={longitude}"
     )
 
-
     # ========================================
     # BREVO API
     # ========================================
 
     url = "https://api.brevo.com/v3/smtp/email"
 
-
     headers = {
-
         "accept": "application/json",
-
         "api-key": BREVO_API_KEY,
-
         "content-type": "application/json"
-
     }
-
 
     # ========================================
     # SEND EMAIL TO EACH CONTACT
     # ========================================
 
     for contact in contacts:
-
         contact_name = contact[0]
         contact_email = contact[1]
 
-
         payload = {
-
             "sender": {
-
-                "name":
-                    BREVO_SENDER_NAME,
-
-                "email":
-                    BREVO_SENDER_EMAIL
-
+                "name": BREVO_SENDER_NAME,
+                "email": BREVO_SENDER_EMAIL
             },
-
             "to": [
-
                 {
-
-                    "email":
-                        contact_email,
-
-                    "name":
-                        contact_name
-
+                    "email": contact_email,
+                    "name": contact_name
                 }
-
             ],
-
-            "subject":
-                "🚨 SafeHer Emergency Alert",
-
+            "subject": "🚨 SafeHer Emergency Alert",
             "htmlContent": (
-    f"<html>"
-    f"<body>"
-    f"<h2>🚨 SafeHer Emergency Alert</h2>"
-
-    f"<p>Hello {contact_name},</p>"
-
-    f"<p>"
-    f"<strong>{sender_name}</strong> "
-    f"has triggered an emergency SOS."
-    f"</p>"
-
-    f"<p>"
-    f"<strong>Name:</strong> {sender_name}<br>"
-    f"<strong>Phone:</strong> {sender_phone}"
-    f"</p>"
-
-    f"<p>"
-    f"<strong>Latitude:</strong> {latitude}<br>"
-    f"<strong>Longitude:</strong> {longitude}"
-    f"</p>"
-
-    f"<p>"
-    f'<a href="{location_url}">'
-    f"📍 View Emergency Location"
-    f"</a>"
-    f"</p>"
-
-    f"<p>"
-    f"Please respond immediately if assistance is required."
-    f"</p>"
-
-    f"<p>"
-    f"This message was automatically sent by SafeHer."
-    f"</p>"
-
-    f"</body>"
-    f"</html>"
+                f"<html>"
+                f"<body>"
+                f"<h2>🚨 SafeHer Emergency Alert</h2>"
+                f"<p>Hello {contact_name},</p>"
+                f"<p>"
+                f"<strong>{sender_name}</strong> "
+                f"has triggered an emergency SOS."
+                f"</p>"
+                f"<p>"
+                f"<strong>Name:</strong> {sender_name}<br>"
+                f"<strong>Phone:</strong> {sender_phone}"
+                f"</p>"
+                f"<p>"
+                f"<strong>Latitude:</strong> {latitude}<br>"
+                f"<strong>Longitude:</strong> {longitude}"
+                f"</p>"
+                f"<p>"
+                f'<a href="{location_url}">'
+                f"📍 View Emergency Location"
+                f"</a>"
+                f"</p>"
+                f"<p>"
+                f"Please respond immediately if assistance is required."
+                f"</p>"
+                f"<p>"
+                f"This message was automatically sent by SafeHer."
+                f"</p>"
+                f"</body>"
+                f"</html>"
             ),
         }
 
-
         try:
-
             response = requests.post(
-
                 url,
-
                 headers=headers,
-
                 json=payload,
-
                 timeout=20
-
             )
-
 
             print(
                 "📧 Brevo status:",
                 response.status_code
             )
 
-
             print(
                 "📧 Brevo response:",
                 response.text
             )
 
-
             if response.ok:
-
                 print(
                     "✅ Emergency email sent to:",
                     contact_email
                 )
-
             else:
-
                 print(
                     "❌ Brevo email failed:",
                     contact_email
                 )
 
-
         except Exception as e:
-
             print(
                 "❌ Brevo email error:",
                 e
             )
             
 def send_emergency_sms(user_id, latitude, longitude):
-
     # ========================================
     # CHECK TEXTBEE CONFIGURATION
     # ========================================
 
     if not TEXTBEE_API_KEY:
-
         print(
             "❌ TEXTBEE_API_KEY is missing."
         )
-
         return
 
-
     if not TEXTBEE_DEVICE_ID:
-
         print(
             "❌ TEXTBEE_DEVICE_ID is missing."
         )
-
         return
-
 
     # ========================================
     # DATABASE
@@ -3323,7 +3062,6 @@ def send_emergency_sms(user_id, latitude, longitude):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-
     # ========================================
     # GET USER INFORMATION
     # ========================================
@@ -3331,26 +3069,20 @@ def send_emergency_sms(user_id, latitude, longitude):
     cursor.execute("""
         SELECT fullname, phone
         FROM users
-        WHERE id = ?
+        WHERE id = %s
     """, (user_id,))
 
     user = cursor.fetchone()
 
-
     if not user:
-
         conn.close()
-
         print(
             "❌ User not found."
         )
-
         return
-
 
     sender_name = user[0]
     sender_phone = user[1]
-
 
     # ========================================
     # GET EMERGENCY CONTACTS
@@ -3359,24 +3091,19 @@ def send_emergency_sms(user_id, latitude, longitude):
     cursor.execute("""
         SELECT fullname, phone
         FROM emergency_contacts
-        WHERE user_id = ?
+        WHERE user_id = %s
         AND phone IS NOT NULL
         AND phone != ''
     """, (user_id,))
 
     contacts = cursor.fetchall()
-
     conn.close()
 
-
     if not contacts:
-
         print(
             "📱 No emergency contacts with phone numbers found."
         )
-
         return
-
 
     # ========================================
     # LOCATION
@@ -3388,7 +3115,6 @@ def send_emergency_sms(user_id, latitude, longitude):
         f"&mlon={longitude}"
     )
 
-
     # ========================================
     # TEXTBEE API
     # ========================================
@@ -3398,17 +3124,10 @@ def send_emergency_sms(user_id, latitude, longitude):
         "api/v1/gateway/send-bulk-sms"
     )
 
-
     headers = {
-
-        "x-api-key":
-            TEXTBEE_API_KEY,
-
-        "Content-Type":
-            "application/json"
-
+        "x-api-key": TEXTBEE_API_KEY,
+        "Content-Type": "application/json"
     }
-
 
     # ========================================
     # CREATE SMS MESSAGES
@@ -3416,12 +3135,9 @@ def send_emergency_sms(user_id, latitude, longitude):
 
     messages = []
 
-
     for contact in contacts:
-
         contact_name = contact[0]
         contact_phone = contact[1]
-
 
         message_body = f"""🚨 SAFEHER EMERGENCY ALERT
 
@@ -3440,85 +3156,59 @@ Please respond immediately if assistance is required.
 This message was automatically sent by SafeHer.
 """
 
-
         messages.append({
-
             "recipients": [
                 contact_phone
             ],
-
-            "message":
-                message_body
-
+            "message": message_body
         })
-
 
     # ========================================
     # TEXTBEE PAYLOAD
     # ========================================
 
     payload = {
-
-        "deviceId":
-            TEXTBEE_DEVICE_ID,
-
-        "messages":
-            messages
-
+        "deviceId": TEXTBEE_DEVICE_ID,
+        "messages": messages
     }
-
 
     # ========================================
     # SEND SMS
     # ========================================
 
     try:
-
         response = requests.post(
-
             url,
-
             headers=headers,
-
             json=payload,
-
             timeout=20
-
         )
-
 
         print(
             "📱 TextBee status:",
             response.status_code
         )
 
-
         print(
             "📱 TextBee response:",
             response.text
         )
 
-
         if response.ok:
-
             print(
                 "✅ Emergency SMS request sent."
             )
-
         else:
-
             print(
                 "❌ TextBee SMS request failed."
             )
 
-
     except Exception as e:
-
         print(
             "❌ TextBee connection error:",
             e
-        )               
-    
+        )              
+
 @app.route("/sos", methods=["POST"])
 def sos():
 
@@ -3585,9 +3275,8 @@ def sos():
     # ========================================
 
     conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT
@@ -3595,7 +3284,7 @@ def sos():
             emergency_alerts,
             nearby_user_alerts
         FROM user_settings
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (user_id,))
 
     settings = cursor.fetchone()
@@ -3638,7 +3327,7 @@ def sos():
                 longitude,
                 event_type
             )
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s)
         """, (
 
             user_id,
@@ -3688,14 +3377,14 @@ def sos():
     # ========================================
 
     # ========================================
-# EMERGENCY EMAIL + SMS
-# ========================================
+    # EMERGENCY EMAIL + SMS
+    # ========================================
 
     if emergency_alerts == 1:
 
-    # ----------------------------------------
-    # EMAIL
-    # ----------------------------------------
+        # ----------------------------------------
+        # EMAIL
+        # ----------------------------------------
 
         try:
 
@@ -3712,14 +3401,14 @@ def sos():
         except Exception as e:
 
             print(
-            "❌ Email notification error:",
-            e
+                "❌ Email notification error:",
+                e
             )   
 
 
-    # ----------------------------------------
-    # SMS
-    # ----------------------------------------
+        # ----------------------------------------
+        # SMS
+        # ----------------------------------------
 
         try:
 
@@ -3730,14 +3419,14 @@ def sos():
             )
 
             print(
-            "📱 Emergency SMS notification sent."
+                "📱 Emergency SMS notification sent."
             )
 
         except Exception as e:
 
             print(
-            "❌ SMS notification error:",
-            e
+                "❌ SMS notification error:",
+                e
             )
 
     else:
@@ -3769,16 +3458,15 @@ def get_app_preferences():
         }), 401
 
     conn = get_db_connection()
-    conn.row_factory = sqlite3.Row
 
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
     cursor.execute("""
         SELECT
             language,
             sound_effects
         FROM user_settings
-        WHERE user_id = ?
+        WHERE user_id = %s
     """, (session["user_id"],))
 
     settings = cursor.fetchone()
@@ -3831,8 +3519,8 @@ def set_language():
 
     cursor.execute("""
         UPDATE user_settings
-        SET language = ?
-        WHERE user_id = ?
+        SET language = %s
+        WHERE user_id = %s
     """, (
         language,
         session["user_id"]
@@ -3854,14 +3542,13 @@ def inject_language():
     if "user_id" in session:
 
         conn = get_db_connection()
-        conn.row_factory = sqlite3.Row
 
-        cursor = conn.cursor()
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
 
         cursor.execute("""
             SELECT language
             FROM user_settings
-            WHERE user_id = ?
+            WHERE user_id = %s
         """, (session["user_id"],))
 
         settings = cursor.fetchone()
@@ -3892,9 +3579,7 @@ def admin_dashboard():
 
     conn = get_db_connection()
 
-    conn.row_factory = sqlite3.Row
-
-    cursor = conn.cursor()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
 
     # ==========================================
@@ -3903,39 +3588,39 @@ def admin_dashboard():
 
     # Total Users
     cursor.execute("""
-        SELECT COUNT(*)
+        SELECT COUNT(*) AS count
         FROM users
     """)
 
-    total_users = cursor.fetchone()[0]
+    total_users = cursor.fetchone()["count"]
 
 
     # Total Emergency Contacts
     cursor.execute("""
-        SELECT COUNT(*)
+        SELECT COUNT(*) AS count
         FROM emergency_contacts
     """)
 
-    total_contacts = cursor.fetchone()[0]
+    total_contacts = cursor.fetchone()["count"]
 
 
     # Total Saved Locations
     cursor.execute("""
-        SELECT COUNT(*)
+        SELECT COUNT(*) AS count
         FROM locations
     """)
 
-    total_locations = cursor.fetchone()[0]
+    total_locations = cursor.fetchone()["count"]
 
 
     # Total SOS Alerts
     cursor.execute("""
-        SELECT COUNT(*)
+        SELECT COUNT(*) AS count
         FROM locations
         WHERE event_type = 'Shared'
     """)
 
-    total_sos = cursor.fetchone()[0]
+    total_sos = cursor.fetchone()["count"]
 
 
     # ==========================================
@@ -3944,31 +3629,31 @@ def admin_dashboard():
 
     # Total Incidents
     cursor.execute("""
-        SELECT COUNT(*)
+        SELECT COUNT(*) AS count
         FROM incident_reports
     """)
 
-    total_incidents = cursor.fetchone()[0]
+    total_incidents = cursor.fetchone()["count"]
 
 
     # Pending Incidents
     cursor.execute("""
-        SELECT COUNT(*)
+        SELECT COUNT(*) AS count
         FROM incident_reports
         WHERE status = 'Pending'
     """)
 
-    pending_incidents = cursor.fetchone()[0]
+    pending_incidents = cursor.fetchone()["count"]
 
 
     # Resolved Incidents
     cursor.execute("""
-        SELECT COUNT(*)
+        SELECT COUNT(*) AS count
         FROM incident_reports
         WHERE status = 'Resolved'
     """)
 
-    resolved_incidents = cursor.fetchone()[0]
+    resolved_incidents = cursor.fetchone()["count"]
 
 
     # ==========================================
@@ -4309,8 +3994,3 @@ def logout():
 if __name__ == "__main__":
     app.run(debug=True)
 
-try:
-    import init_db
-    print("✅ Database initialization completed.")
-except Exception as e:
-    print("❌ Database initialization failed:", e)
