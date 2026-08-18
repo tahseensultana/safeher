@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import sqlite3
 import psycopg2
+from psycopg2.extras import RealDictCursor
 import requests
 from flask import Flask, flash, jsonify, render_template, request, redirect, url_for,session
 
