@@ -2164,9 +2164,9 @@ def update_live_location():
             "message": "Settings not found."
         })
 
-    location_sharing = settings[0]
-    live_location_updates = settings[1]
-    show_location_to_others = settings[2]
+    location_sharing = settings["location_sharing"]
+	live_location_updates = settings["live_location_updates"]
+	show_location_to_others = settings["show_location_to_others
 
     if location_sharing != 1:
         conn.close()
