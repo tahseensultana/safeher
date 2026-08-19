@@ -89,8 +89,8 @@ def login():
 
             session.clear()
 
-            session["user_id"] = user[0]
-            session["fullname"] = user[1]
+            session["user_id"] = user["id"]
+            session["fullname"] = user["fullname"]
 
             return redirect(
                 url_for("dashboard")
