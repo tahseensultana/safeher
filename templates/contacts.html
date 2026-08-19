@@ -60,13 +60,13 @@ href="{{ url_for('static', filename='dashboard.css') }}">
 <button class="btn btn-warning btn-sm editBtn"
 data-bs-toggle="modal"
 data-bs-target="#editModal"
-data-id="{{ contact[0] }}"
-data-name="{{ contact[1] }}"
-data-phone="{{ contact[2] }}"
-data-email="{{ contact[3] or '' }}"
-data-relationship="{{ contact[4] }}"
-data-primary="{{ contact[5] }}">✏ Edit</button>
-<a href="{{ url_for('delete_contact',id=contact[0]) }}" class="btn btn-danger btn-sm">Delete</a>
+data-id="{{ contact["id"] }}"
+data-name="{{ contact["fullname"] }}"
+data-phone="{{ contact["phone"] }}"
+data-email="{{ contact["email"] or '' }}"
+data-relationship="{{ contact["relationship"] }}"
+data-primary="{{ contact["is_primary"] }}">✏ Edit</button>
+<a href="{{ url_for('delete_contact',id=contact["id]) }}" class="btn btn-danger btn-sm">Delete</a>
 </div></div></div>
 {% endfor %}
 {% else %}
