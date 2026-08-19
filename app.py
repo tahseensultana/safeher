@@ -2315,14 +2315,14 @@ def nearby_emergency_alerts():
 
     for row in rows:
         alerts.append({
-            "id": row[0],
-            "name": row[1],
-            "phone": row[2],
-            "latitude": row[3],
-            "longitude": row[4],
-            "message": row[5],
-            "created_at": row[6],
-            "is_read": row[7]
+            "id": row["id"],
+            "name": row["sender_name"],
+            "phone": row["sender_phone"],
+            "latitude": row["latitude"],
+            "longitude": row["longitude"],
+            "message": row["message"],
+            "created_at": row["created_at"],
+            "is_read": row["is_read"]
         })
 
     return jsonify({
@@ -2416,8 +2416,8 @@ def create_nearby_emergency_alert(sender_id, latitude, longitude):
             )
             return
 
-        sender_name = sender[0]
-        sender_phone = sender[1]
+        sender_name = sender["fullname"]
+        sender_phone = sender["phone"]
 
         # ========================================
         # GET SENDER PRIVACY SETTINGS
@@ -2435,9 +2435,9 @@ def create_nearby_emergency_alert(sender_id, latitude, longitude):
         sender_settings = cursor.fetchone()
 
         if sender_settings:
-            share_name = sender_settings[0]
-            share_phone = sender_settings[1]
-            show_location = sender_settings[2]
+            share_name = sender_settings["share_name_emergency"]
+            share_phone = sender_settings["share_phone_emergency"]
+            show_location = sender_settings["show_location_to_others"]
         else:
             share_name = 0
             share_phone = 0
@@ -2476,7 +2476,7 @@ def create_nearby_emergency_alert(sender_id, latitude, longitude):
         # ========================================
 
         for user in users:
-            receiver_id = user[0]
+            receiver_id = user["id"]
 
             # ====================================
             # RECEIVER SETTINGS
@@ -2689,8 +2689,8 @@ def send_emergency_email(user_id, latitude, longitude):
         print("❌ User not found.")
         return
 
-    sender_name = user[0]
-    sender_phone = user[1]
+    sender_name = user["fullname"]
+    sender_phone = user["phone"]
 
     # ========================================
     # GET EMERGENCY CONTACTS
@@ -2740,8 +2740,8 @@ def send_emergency_email(user_id, latitude, longitude):
     # ========================================
 
     for contact in contacts:
-        contact_name = contact[0]
-        contact_email = contact[1]
+        contact_name = contact["fullname"]
+        contact_email = contact["email"]
 
         payload = {
             "sender": {
@@ -2866,8 +2866,8 @@ def send_emergency_sms(user_id, latitude, longitude):
         )
         return
 
-    sender_name = user[0]
-    sender_phone = user[1]
+    sender_name = user["id"]
+    sender_phone = user["phone"]
 
     # ========================================
     # GET EMERGENCY CONTACTS
@@ -2921,8 +2921,8 @@ def send_emergency_sms(user_id, latitude, longitude):
     messages = []
 
     for contact in contacts:
-        contact_name = contact[0]
-        contact_phone = contact[1]
+        contact_name = contact["fullname"]
+        contact_phone = contact["phone"]
 
         message_body = f"""🚨 SAFEHER EMERGENCY ALERT
 
