@@ -53,10 +53,10 @@ href="{{ url_for('static', filename='dashboard.css') }}">
 <div class="col-md-6 mb-3">
 <div class="card shadow-sm">
 <div class="card-body">
-<h5>{{ contact[1] }} {% if contact[5]==1 %}<span class="badge bg-success">Primary</span>{% endif %}</h5>
-<p>📞 {{ contact[2] }}</p>
-<p>📧 {{ contact[3] or 'Not Provided' }}</p>
-<p>❤️ {{ contact[4] }}</p>
+<h5>{{ contact["fullname"] }} {% if contact["is_primary"]==1 %}<span class="badge bg-success">Primary</span>{% endif %}</h5>
+<p>📞 {{ contact["phone] }}</p>
+<p>📧 {{ contact["email"] or 'Not Provided' }}</p>
+<p>❤️ {{ contact["relationship"] }}</p>
 <button class="btn btn-warning btn-sm editBtn"
 data-bs-toggle="modal"
 data-bs-target="#editModal"
@@ -66,7 +66,7 @@ data-phone="{{ contact["phone"] }}"
 data-email="{{ contact["email"] or '' }}"
 data-relationship="{{ contact["relationship"] }}"
 data-primary="{{ contact["is_primary"] }}">✏ Edit</button>
-<a href="{{ url_for('delete_contact',id=contact["id]) }}" class="btn btn-danger btn-sm">Delete</a>
+<a href="{{ url_for('delete_contact',id=contact["id"]) }}" class="btn btn-danger btn-sm">Delete</a>
 </div></div></div>
 {% endfor %}
 {% else %}
