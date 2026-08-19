@@ -2165,8 +2165,8 @@ def update_live_location():
         })
 
     location_sharing = settings["location_sharing"]
-	live_location_updates = settings["live_location_updates"]
-	show_location_to_others = settings["show_location_to_others
+    live_location_updates = settings["live_location_updates"]
+    show_location_to_others = settings["show_location_to_others"]
 
     if location_sharing != 1:
         conn.close()
